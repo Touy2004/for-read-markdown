@@ -38,7 +38,7 @@ For Merchant locations, **Marketing Department (MK)** is the ultimate authority 
 | **MK rejects Branch submission** | ❌ No | ✅ **Yes** | **`R` (Rejected)** — Sent back to Branch with reason |
 | **Branch updates rejected record** | ✅ **Yes** | — | Resubmitted as **`P` (Pending)** |
 
-### 3. Merchant Approval Flowchart
+### 3. Merchant Creation & Initial Approval Flowchart
 
 ```mermaid
 flowchart TD
@@ -74,7 +74,61 @@ flowchart TD
 
 ---
 
-## 🏦 FLOW 2: Branch Locations (ສາຂາ & ໜ່ວຍບໍລິການ)
+## 🔄 FLOW 2: Edit Lifecycle (When Status Changes from 'A' to 'P')
+
+When an existing location that is already **Active (`A`)** on the live map gets updated, the system enforces quality and brand protection rules:
+
+### 1. Why does status revert from `A` to `P`?
+* **Data & Brand Integrity:** To prevent unverified details (e.g., incorrect phone numbers, moved GPS pins, or unauthorized discount claims) from showing up immediately on customer mobile apps.
+* **Dual Control:** Any modifications submitted by **Branch Staff** must be re-verified by **Marketing (MK)**.
+
+### 2. Edit Rules by Role
+* **If Branch Staff edits an Active (`A`) Merchant:**
+  * ⚠️ **Status reverts from `A` (Active) ➔ `P` (Pending Re-Approval).**
+  * The location is temporarily paused/hidden from the public map until re-verified.
+  * The record re-enters the **Marketing Department (MK) Review Queue**.
+  * **MK Decision:**
+    * **Approve:** Status returns to **`A` (Active)** with the newly updated information live on the map.
+    * **Reject:** Status becomes **`R` (Rejected)** with comments explaining why the edits were refused.
+* **If Marketing Department (MK - Admin) edits an Active (`A`) Merchant:**
+  * ✅ **Direct Update:** Status remains **`A` (Active)**. No approval needed. Changes appear instantly on the map.
+* **If Branch Supervision (BR) or MK edits an Active (`A`) Branch:**
+  * ✅ **Direct Update:** Both departments possess Admin authority; modifications remain **`A` (Active)** directly.
+
+### 3. Edit & Re-Approval Flowchart (`A` ➔ `P` ➔ `A` / `R`)
+
+```mermaid
+flowchart TD
+    ActiveRecord(["🟢 Location is ACTIVE ('A')\n(Live on Customer Map)"]) --> ClickEdit["✏️ User clicks 'Edit Location'\n(Modifies Name, Phone, GPS, or Promo)"]
+    
+    ClickEdit --> WhoEdits{"👤 Who is editing\nthis location?"}
+    
+    %% Branch Staff Edit Path (A -> P)
+    WhoEdits -- "🏢 Branch Staff" --> BranchSave["💾 Branch Staff Saves Changes"]
+    BranchSave --> RevertP["🟡 STATUS REVERTS: 'A' ➔ 'P'\n(Status changed from Active to Pending)\n• Temporarily hidden from customer map\n• Sent to Marketing Re-approval Queue"]
+    
+    RevertP --> MKReviewQueue["📋 Marketing Department (MK)\nReceives Re-Approval Request\n• Inspects modified data/GPS/photos"]
+    
+    MKReviewQueue --> MKDecision{"⚖️ MK Re-Approval Decision"}
+    
+    MKDecision -- "Reject (ປະຕິເສດ)" --> RevertR["🔴 Status becomes 'R' (Rejected)\n• Rejection reason provided to Branch\n• Branch must fix and resubmit"]
+    RevertR --> BranchFixEdit["✏️ Branch Staff fixes edits & resubmits"]
+    BranchFixEdit --> RevertP
+    
+    MKDecision -- "Approve (ອະນຸມັດ)" --> ApprovedA["🟢 Status returns to 'A' (Active)\nNew updates published live on map"]
+    
+    %% Admin Direct Edit Path (A -> A)
+    WhoEdits -- "👑 Admin (MK or BR)" --> AdminDirectSave["💾 Admin Saves Changes"]
+    AdminDirectSave --> KeepA["🟢 STATUS REMAINS: 'A' (Active)\n• Direct Save (No Approval Queue)\n• Live map updates instantly"]
+    
+    %% Map
+    ApprovedA --> LiveMap["🗺️ LIVE ON CUSTOMER MAP\nUpdated data visible to customers"]
+    KeepA --> LiveMap
+```
+
+---
+
+## 🏦 FLOW 3: Branch Locations (ສາຂາ & ໜ່ວຍບໍລິການ)
 
 For bank branches, management is shared between two specialized Admin departments:
 1. **Branch Supervision Department (BR / ພະແນກຄຸ້ມຄອງສາຂາ):** Manages official **Data & Operations**.
@@ -126,21 +180,24 @@ flowchart TD
 | :--- | :--- | :--- |
 | **Admin Authority** | **Marketing Department (MK)** | **Branch Supervision (BR)** & **Marketing (MK)** |
 | **Can Branch Staff Create?** | ✅ Yes (Submits as `P` Pending) | ❌ Managed centrally by BR & MK Admins |
-| **Approval Required?** | • **If MK creates:** ❌ No (Auto `A`)<br>• **If Branch creates:** ✅ Yes (MK Approves) | ❌ No (Direct Admin management) |
+| **Can Branch Staff Edit?** | ✅ Yes (Status changes **`A` ➔ `P`**) | ❌ Managed centrally by BR & MK Admins |
+| **Approval on Edit?** | • **If MK edits:** ❌ No (Stays `A`)<br>• **If Branch edits:** ✅ Yes (**`A` ➔ `P` ➔ MK Approves**) | ❌ No (Direct Admin management) |
 | **Data Responsibility** | Branch submits initial; MK verifies | **BR:** Address, GPS pin, phone, opening hours |
 | **Image Responsibility** | Branch/MK upload storefront photo | **MK:** Professional building & promotional media |
-| **Status Flow** | `P` (Pending) ➔ `A` (Approved) or `R` (Rejected) | Direct `A` (Active) upon completion |
+| **Initial Creation Flow** | `P` (Pending) ➔ `A` (Approved) | Direct `A` (Active) upon completion |
 
 ---
 
 ## 🛠️ Quick SOP by Department
 
 ### 📢 Marketing Department (MK)
-1. **For Merchants:**
+1. **For Merchants (Initial & Edits):**
    * Create partner merchants directly with instant status **`A`**.
-   * Open **Service Points** > filter by `Pending` to review branch submissions:
-     * Click **Approve** to publish to mobile app.
-     * Click **Reject** and provide clear feedback if information/photos are insufficient.
+   * Edit existing merchants directly (status stays **`A`**).
+   * Open **Service Points** > filter by `Pending` to review branch submissions and edits:
+     * Review changes made by the branch (GPS coordinates, phone, images).
+     * Click **Approve** to publish/restore to mobile app.
+     * Click **Reject** and provide clear feedback if changes are unacceptable.
 2. **For Branches:**
    * Review branch entries created by **BR**.
    * Upload approved, high-resolution building photography and promotional banners.
@@ -154,4 +211,5 @@ flowchart TD
 ### 🏪 Branch Staff
 1. **For Merchants:**
    * Enter newly acquired local merchant details, pin their GPS, upload a storefront picture, and submit (`P`).
+   * When editing an existing Active (`A`) merchant, be aware that **status will change back to `P` (Pending)** and will require Marketing approval again.
    * If rejected (`R`), check MK feedback, correct the data, and resubmit.
