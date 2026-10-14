@@ -38,38 +38,34 @@ For Merchant locations, **Marketing Department (MK)** is the ultimate authority 
 | **MK rejects Branch submission** | ❌ No | ✅ **Yes** | **`R` (Rejected)** — Sent back to Branch with reason |
 | **Branch updates rejected record** | ✅ **Yes** | — | Resubmitted as **`P` (Pending)** |
 
-### 3. Merchant Creation & Initial Approval Flowchart
+### 3. Merchant Creation & Initial Approval Flowchart (Horizontal)
 
 ```mermaid
-flowchart TD
-    Start(["🚀 Add Merchant"]) --> Creator{"👤 Who is creating the Merchant?"}
+flowchart LR
+    Start(["🚀 Start"]) --> Creator{"👤 Creator"}
     
     %% MK Direct Flow
-    Creator -- "📢 Marketing Department (MK - Admin)" --> MKCreate["1. Fills Merchant Info & Address\n2. Pins GPS Coordinates\n3. Uploads Storefront & Promo Images\n4. Sets Discount Tag (e.g. 5% OFF)"]
-    MKCreate --> MKDirectSave["💾 Save Direct (NO APPROVAL NEEDED)\nStatus = 'A' (Active)"]
+    Creator -- "📢 Marketing (MK Admin)" --> MKCreate["Inputs Details, GPS\n& Promo Media"]
+    MKCreate --> MKDirect["💾 Save Direct (No Approval)\nStatus = 'A' (Active)"]
     
     %% Branch Submission Flow
-    Creator -- "🏢 Branch Department Staff" --> BranchCreate["1. Fills Merchant Details\n2. Pins GPS Coordinates\n3. Uploads initial store photo"]
+    Creator -- "🏢 Branch Staff" --> BranchCreate["Inputs Details, GPS\n& Store Photo"]
     BranchCreate --> BranchSubmit["💾 Submit for Approval\nStatus = 'P' (Pending)"]
     
-    BranchSubmit --> MKQueue["📋 Marketing Review Queue\nAppears in MK Pending List"]
-    
-    MKQueue --> MKInspect["🔍 Marketing Department (MK) Reviews:\n• Merchant partnership validity\n• GPS coordinate precision\n• Image & branding quality"]
-    
+    BranchSubmit --> MKQueue["📋 MK Review Queue"]
+    MKQueue --> MKInspect["🔍 MK Quality Check\n(GPS & Media Quality)"]
     MKInspect --> MKDecision{"⚖️ MK Decision"}
     
-    MKDecision -- "Reject (ປະຕິເສດ)" --> InputReason["📝 MK inputs rejection reason\n(e.g., 'Address mismatch' or 'Photo blurry')"]
-    InputReason --> StatusR["🔴 Status becomes 'R' (Rejected)\nReturned to Branch Staff for correction"]
-    StatusR --> BranchFix["✏️ Branch Staff fixes issue and re-submits"]
+    MKDecision -- "Reject" --> Reason["📝 Input Rejection Reason\nStatus = 'R' (Rejected)"]
+    Reason --> BranchFix["✏️ Branch Fixes & Resubmits"]
     BranchFix --> BranchSubmit
     
-    MKDecision -- "Approve (ອະນຸມັດ)" --> StatusA["🟢 Status becomes 'A' (Active / Approved)"]
+    MKDecision -- "Approve" --> StatusA["🟢 Approved by MK\nStatus = 'A' (Active)"]
     
     %% Live Map
-    MKDirectSave --> LiveMap["🗺️ LIVE ON CUSTOMER MAP!\nCustomers see Merchant pin, promotions,\nphotos, and get directions"]
+    MKDirect --> LiveMap["🗺️ LIVE ON CUSTOMER MAP\n(Search, Promo, Navigation)"]
     StatusA --> LiveMap
-    
-    LiveMap --> End(["🏁 Finished"])
+    LiveMap --> End(["🏁 End"])
 ```
 
 ---
@@ -95,34 +91,31 @@ When an existing location that is already **Active (`A`)** on the live map gets 
 * **If Branch Supervision (BR) or MK edits an Active (`A`) Branch:**
   * ✅ **Direct Update:** Both departments possess Admin authority; modifications remain **`A` (Active)** directly.
 
-### 3. Edit & Re-Approval Flowchart (`A` ➔ `P` ➔ `A` / `R`)
+### 3. Edit & Re-Approval Flowchart (`A` ➔ `P` ➔ `A` / `R`) (Horizontal)
 
 ```mermaid
-flowchart TD
-    ActiveRecord(["🟢 Location is ACTIVE ('A')\n(Live on Customer Map)"]) --> ClickEdit["✏️ User clicks 'Edit Location'\n(Modifies Name, Phone, GPS, or Promo)"]
+flowchart LR
+    Active(["🟢 Active ('A')\non Live Map"]) --> ClickEdit["✏️ Edit Location"]
+    ClickEdit --> WhoEdits{"👤 Who edits?"}
     
-    ClickEdit --> WhoEdits{"👤 Who is editing\nthis location?"}
+    %% Branch Staff Path
+    WhoEdits -- "🏢 Branch Staff" --> BranchSave["💾 Branch Saves Changes"]
+    BranchSave --> RevertP["🟡 Reverts: 'A' ➔ 'P'\n(Pending MK Re-Approval)"]
+    RevertP --> MKReview["📋 MK Review Queue\n(Inspects Changes)"]
+    MKReview --> Decision{"⚖️ MK Decision"}
     
-    %% Branch Staff Edit Path (A -> P)
-    WhoEdits -- "🏢 Branch Staff" --> BranchSave["💾 Branch Staff Saves Changes"]
-    BranchSave --> RevertP["🟡 STATUS REVERTS: 'A' ➔ 'P'\n(Status changed from Active to Pending)\n• Temporarily hidden from customer map\n• Sent to Marketing Re-approval Queue"]
+    Decision -- "Reject" --> RevertR["🔴 Status = 'R' (Rejected)\n(Reason sent to Branch)"]
+    RevertR --> BranchFix["✏️ Branch Fixes & Resubmits"]
+    BranchFix --> RevertP
     
-    RevertP --> MKReviewQueue["📋 Marketing Department (MK)\nReceives Re-Approval Request\n• Inspects modified data/GPS/photos"]
+    Decision -- "Approve" --> ReturnA["🟢 Status returns to 'A' (Active)"]
     
-    MKReviewQueue --> MKDecision{"⚖️ MK Re-Approval Decision"}
+    %% Admin Direct Path
+    WhoEdits -- "👑 Admin (MK or BR)" --> AdminSave["💾 Admin Saves Changes"]
+    AdminSave --> KeepA["🟢 Status remains 'A' (Active)\n(Direct save, no queue)"]
     
-    MKDecision -- "Reject (ປະຕິເສດ)" --> RevertR["🔴 Status becomes 'R' (Rejected)\n• Rejection reason provided to Branch\n• Branch must fix and resubmit"]
-    RevertR --> BranchFixEdit["✏️ Branch Staff fixes edits & resubmits"]
-    BranchFixEdit --> RevertP
-    
-    MKDecision -- "Approve (ອະນຸມັດ)" --> ApprovedA["🟢 Status returns to 'A' (Active)\nNew updates published live on map"]
-    
-    %% Admin Direct Edit Path (A -> A)
-    WhoEdits -- "👑 Admin (MK or BR)" --> AdminDirectSave["💾 Admin Saves Changes"]
-    AdminDirectSave --> KeepA["🟢 STATUS REMAINS: 'A' (Active)\n• Direct Save (No Approval Queue)\n• Live map updates instantly"]
-    
-    %% Map
-    ApprovedA --> LiveMap["🗺️ LIVE ON CUSTOMER MAP\nUpdated data visible to customers"]
+    %% Live Output
+    ReturnA --> LiveMap["🗺️ LIVE ON CUSTOMER MAP\n(Updated data visible)"]
     KeepA --> LiveMap
 ```
 
@@ -157,19 +150,15 @@ For bank branches, management is shared between two specialized Admin department
   * **MK** uploads polished, brand-compliant photography and attaches seasonal marketing promotions.
   * Status is maintained as **Active (`A`)** upon completion, ensuring customers always see accurate, high-quality branch profiles.
 
-### 3. Branch Workflow Diagram
+### 3. Branch Workflow Diagram (Horizontal & Easy to Read)
 
 ```mermaid
-flowchart TD
-    Start(["🚀 Setup / Update Branch"]) --> BRInput["🏢 Branch Supervision Dept (BR)\n[Operational Data Admin]\n• Enters Official Branch Name\n• Selects Address & Operating Hours\n• Pins verified GPS Lat/Long on Map\n• Inputs Official Phone Numbers"]
-    
-    BRInput --> MKInput["🎨 Marketing Department (MK)\n[Creative & Promo Admin]\n• Uploads High-Res Storefront Photos\n• Uploads Interior / Counter Photos\n• Adds Active Branch Campaign / Promo Tag"]
-    
-    MKInput --> Publish["💾 Save & Publish Directly (Admin Level)\nStatus = 'A' (Active)"]
-    
-    Publish --> LiveMap["🗺️ LIVE ON CUSTOMER MAP!\nCustomers see official branch hours, clear photos,\nand accurate GPS navigation"]
-    
-    LiveMap --> End(["🏁 Finished"])
+flowchart LR
+    Start(["🚀 Start"]) --> BR["🏢 1. Branch Supervision (BR)\nInputs Info, Address & Pins GPS"]
+    BR --> MK["🎨 2. Marketing Dept (MK)\nUploads Photos & Promo Tag"]
+    MK --> Publish["💾 3. Direct Publish (Admin)\nStatus = 'A' (Active)"]
+    Publish --> LiveMap["🗺️ Live on Customer Map\n(Hours, Photos & Directions)"]
+    LiveMap --> End(["🏁 End"])
 ```
 
 ---
