@@ -1,204 +1,186 @@
-# Service Point: Roles & Approval Workflow by Location Type
-> **Specific Departmental Governance for Merchant and Branch Locations**
-> *(Note: ATM flow is currently pending confirmation and is excluded from this document)*
+# ຈຸດບໍລິການ (Service Point): ພາລະບົດບາດ ແລະ ຂັ້ນຕອນການອະນຸມັດຕາມປະເພດສະຖານທີ່
 
----
+**ການກຳນົດສິດຄຸ້ມຄອງສະເພາະຂອງແຕ່ລະຂະເເໜງ ສຳລັບຮ້ານຄ້າ ແລະ ສາຂາ**
 
-## 📌 Executive Summary & Scope
+_(ໝາຍເຫດ: ຂັ້ນຕອນສຳລັບຕູ້ ATM ແມ່ນກຳລັງລໍຖ້າການຢືນຢັນ ແລະ ຍັງບໍ່ທັນໄດ້ລວມເຂົ້າໃນເອກະສານສະບັບນີ້)_
 
-The Service Point management system separates workflows by **Location Type**, assigning distinct administrative authorities to specialized departments:
+## ບົດສະຫຼຸບຜູ້ບໍລິຫານ ແລະ ຂອບເຂດວຽກງານ
 
-| Location Type | Primary Admin Departments | Creator Roles | Approval Required? |
-| :--- | :--- | :--- | :--- |
-| 🏪 **Merchant (ຮ້ານຄ້າ)** | **Marketing Department (MK)** | • MK Department (Admin)<br>• Branch Staff (Maker) | • **MK creates:** ❌ No (Status `A` Direct)<br>• **Branch creates:** ✅ Yes (Status `P` ➔ MK Approves) |
-| 🏦 **Branch (ສາຂາ)** | **Branch Supervision (BR)** & **Marketing (MK)** | • BR Department (Data Admin)<br>• MK Department (Media Admin) | ❌ Both are Admin departments; collaborate on Data + Images |
-| 🏧 **ATM (ຕູ້ ATM)** | *Pending confirmation* | *Excluded for now* | *TBD* |
+ລະບົບການຄຸ້ມຄອງຈຸດບໍລິການ (Service Point) ໄດ້ແບ່ງຂັ້ນຕອນການເຮັດວຽກຕາມ **ປະເພດສະຖານທີ່**, ໂດຍມີການມອບໝາຍສິດຄຸ້ມຄອງບໍລິຫານໃຫ້ແກ່ຂະເເໜງວິຊາສະເພາະ ດັ່ງລຸ່ມນີ້:
 
----
+| ປະເພດສະຖານທີ່          | ຂະເເໜງຄຸ້ມຄອງຫຼັກ (Admin)                               | ພາລະບົດບາດຜູ້ສ້າງຂໍ້ມູນ (Creator)                                  | ຄວາມຈຳເປັນໃນການອະນຸມັດ                                                                                  |
+| ---------------------- | ------------------------------------------------------- | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------- |
+| **ຮ້ານຄ້າ (Merchant)** | **ຂະເເໜງການຕະຫຼາດ (MK)**                                | \- ຂະເເໜງ MK (Admin) \- ພະນັກງານສາຂາ (Maker)                       | \- **ຂະເເໜງ MK ສ້າງ:** ບໍ່ຈຳເປັນ (ສະຖານະ `A` ໂດຍກົງ) \- **ສາຂາສ້າງ:** ຈຳເປັນ (ສະຖານະ `P` -> MK ອະນຸມັດ) |
+| **ສາຂາ (Branch)**      | **ຂະເເໜງຄຸ້ມຄອງສາຂາ (BR)** ແລະ **ຂະເເໜງການຕະຫຼາດ (MK)** | \- ຂະເເໜງ BR (ຜູ້ຄຸ້ມຄອງສາຂາ) \- ຂະເເໜງ MK (ນັກການຕະຫຼາດ) | ບໍ່ຈຳເປັນ (ທັງສອງຂະເເໜງມີສິດ Admin ຮ່ວມກັນໃນການຈັດການຂໍ້ມູນ ແລະ ຮູບພາບ)                                 |
+| **ຕູ້ ATM (ATM)**      | _ລໍຖ້າການຢືນຢັນ_                                        | _ຍັງບໍ່ລວມໃນເອກະສານນີ້_                                            | _ລໍຖ້າການກຳນົດ_                                                                                         |
 
-## 🏪 FLOW 1: Merchant Locations (ຮ້ານຄ້າພັນທະມິດ)
+## ຂັ້ນຕອນທີ 1: ສະຖານທີ່ຮ້ານຄ້າ (Merchant Locations)
 
-For Merchant locations, **Marketing Department (MK)** is the ultimate authority (Admin).
+ສຳລັບສະຖານທີ່ປະເພດຮ້ານຄ້າ, **ຂະເເໜງການຕະຫຼາດ (MK)** ເປັນຜູ້ມີສິດອະນຸມັດສູງສຸດ (Admin).
 
-### 1. Department Roles
-* **Marketing Department (MK) — [Admin]:**
-  * Direct publication authority.
-  * When MK creates/posts a Merchant, it is saved directly as **Active (`A`)** with **NO approval needed**.
-  * Reviews and acts as the gatekeeper for Merchant records submitted by branches.
-* **Branch Department / Branch Staff — [Maker]:**
-  * When a branch acquires a new local merchant partner, they submit the initial details and location.
-  * Saved as **Pending (`P`)**. Must be approved by MK before appearing on the public map.
+### 1. ພາລະບົດບາດຂອງຂະເເໜງ
 
-### 2. Merchant Approval Matrix
-| Action | Branch Staff (Maker) | Marketing Dept (MK - Admin) | Resulting Status & Effect |
-| :--- | :---: | :---: | :--- |
-| **MK creates Merchant** | — | ✅ **Yes** | **`A` (Active)** — Live on public map immediately |
-| **Branch creates Merchant** | ✅ **Yes** | — | **`P` (Pending)** — Awaiting MK review |
-| **MK approves Branch submission** | ❌ No | ✅ **Yes** | **`A` (Active)** — Published to public map |
-| **MK rejects Branch submission** | ❌ No | ✅ **Yes** | **`R` (Rejected)** — Sent back to Branch with reason |
-| **Branch updates rejected record** | ✅ **Yes** | — | Resubmitted as **`P` (Pending)** |
+- **ຂະເເໜງການຕະຫຼາດ (MK) — \[ຜູ້ຄຸ້ມຄອງລະບົບ / Admin\]:**
+  - ມີສິດໃນການເຜີຍແຜ່ຂໍ້ມູນໂດຍກົງ.
 
-### 3. Merchant Creation & Initial Approval Flowchart (Horizontal)
+  - ເມື່ອຂະເເໜງການຕະຫຼາດ ສ້າງ ຫຼື ລົງຂໍ້ມູນຮ້ານຄ້າ, ລະບົບຈະບັນທຶກເປັນສະຖານະ **ເປີດໃຊ້ງານ (`A` - Active)** ໂດຍກົງ **ໂດຍບໍ່ຕ້ອງຜ່ານການອະນຸມັດ**.
+
+  - ເຮັດໜ້າທີ່ກວດກາ ແລະ ອະນຸມັດຂໍ້ມູນຮ້ານຄ້າທີ່ຖືກສົ່ງເຂົ້າມາຈາກທາງສາຂາ.
+
+- **ຂະເເໜງຄຸ້ມຄອງສາຂາ / ພະນັກງານສາຂາ — \[ຜູ້ສ້າງຂໍ້ມູນ / Maker\]:**
+  - ເມື່ອສາຂາຫາຮ້ານຄ້າໃໝ່ໃນພື້ນທີ່ໄດ້, ພະນັກງານສາຂາຈະເປັນຜູ້ປ້ອນລາຍລະອຽດເບື້ອງຕົ້ນ ແລະ ຕຳແໜ່ງທີ່ຕັ້ງ.
+
+  - ຂໍ້ມູນຈະຖືກບັນທຶກເປັນສະຖານະ **ລໍຖ້າການອະນຸມັດ (`P` - Pending)** ແລະ ຕ້ອງໄດ້ຮັບການອະນຸມັດຈາກຂະເເໜງ MK ກ່ອນ ຈຶ່ງຈະສະແດງຜົນຢູ່ໃນແຜນທີ່ສາທາລະນະ.
+
+### 2. ຕາຕະລາງສິດການອະນຸມັດຂໍ້ມູນຮ້ານຄ້າ
+
+| ກິດຈະກຳການດຳເນີນງານ                | ພະນັກງານສາຂາ (Maker) | ຂະເເໜງການຕະຫຼາດ (MK - Admin) | ສະຖານະຜົນລັບ ແລະ ຜົນກະທົບ                            |
+| ---------------------------------- | -------------------- | ---------------------------- | ---------------------------------------------------- |
+| **ຂະເເໜງການຕະຫຼາດ ສ້າງຂໍ້ມູນຮ້ານຄ້າ**    | —                    | ມີສິດ                        | **`A` (Active)** — ສະແດງຜົນໃນແຜນທີ່ສາທາລະນະທັນທີ     |
+| **ສາຂາສ້າງຂໍ້ມູນຮ້ານຄ້າ**          | ມີສິດ                | —                            | **`P` (Pending)** — ລໍຖ້າການກວດສອບຈາກຂະເເໜງ MK       |
+| **ຂະເເໜງການຕະຫຼາດ ອະນຸມັດຂໍ້ມູນຈາກສາຂາ** | ບໍ່ມີສິດ             | ມີສິດ                        | **`A` (Active)** — ເຜີຍແຜ່ລົງໃນແຜນທີ່ສາທາລະນະ        |
+| **ຂະເເໜງການຕະຫຼາດ ປະຕິເສດຂໍ້ມູນຈາກສາຂາ** | ບໍ່ມີສິດ             | ມີສິດ                        | **`R` (Rejected)** — ສົ່ງກັບຄືນໃຫ້ສາຂາພ້ອມລະບຸເຫດຜົນ |
+| **ສາຂາແກ້ໄຂຂໍ້ມູນທີ່ຖືກປະຕິເສດ**   | ມີສິດ                | —                            | ສົ່ງເຂົ້າລະບົບຄືນໃໝ່ໃນສະຖານະ **`P` (Pending)**       |
+
+### 3. ແຜນວາດຂັ້ນຕອນການສ້າງ ແລະ ການອະນຸມັດຂໍ້ມູນຮ້ານຄ້າເບື້ອງຕົ້ນ
 
 ```mermaid
 flowchart LR
-    Start(["🚀 Start"]) --> Creator{"👤 Creator"}
-    
+    Start(["ເລີ່ມຕົ້ນ"]) --> Creator{"ຜູ້ສ້າງຂໍ້ມູນ"}
+
     %% MK Direct Flow
-    Creator -- "📢 Marketing (MK Admin)" --> MKCreate["Inputs Details, GPS\n& Promo Media"]
-    MKCreate --> MKDirect["💾 Save Direct (No Approval)\nStatus = 'A' (Active)"]
-    
+    Creator -- "ຂະເເໜງການຕະຫຼາດ" --> MKCreate["ປ້ອນລາຍລະອຽດ, ພິກັດ GPS\nແລະ ຂໍ້ມູນຕ່າງໆ"]
+    MKCreate --> MKDirect["ບັນທຶກໂດຍກົງ (ບໍ່ຕ້ອງລໍຖ້າອະນຸມັດ)\nສະຖານະ = 'A' (Active)"]
+
     %% Branch Submission Flow
-    Creator -- "🏢 Branch Staff" --> BranchCreate["Inputs Details, GPS\n& Store Photo"]
-    BranchCreate --> BranchSubmit["💾 Submit for Approval\nStatus = 'P' (Pending)"]
-    
-    BranchSubmit --> MKQueue["📋 MK Review Queue"]
-    MKQueue --> MKInspect["🔍 MK Quality Check\n(GPS & Media Quality)"]
-    MKInspect --> MKDecision{"⚖️ MK Decision"}
-    
-    MKDecision -- "Reject" --> Reason["📝 Input Rejection Reason\nStatus = 'R' (Rejected)"]
-    Reason --> BranchFix["✏️ Branch Fixes & Resubmits"]
+    Creator -- "ພະນັກງານສາຂາ" --> BranchCreate["ປ້ອນລາຍລະອຽດ, ພິກັດ GPS\nແລະ ຂໍ້ມູນຕ່າງໆ"]
+    BranchCreate --> BranchSubmit["ສົ່ງເພື່ອຂໍອະນຸມັດ\nສະຖານະ = 'P' (Pending)"]
+
+    BranchSubmit --> MKQueue["ລາຍການລໍຖ້າກວດສອບຂອງຂະເເໜງການຕະຫຼາດ"]
+    MKQueue --> MKInspect["ຂະເເໜງການຕະຫຼາດກວດສອບຄຸນນະພາບ"]
+    MKInspect --> MKDecision{"ການຕັດສິນໃຈຂອງຂະເເໜງການຕະຫຼາດ"}
+
+    MKDecision -- "ປະຕິເສດ (Reject)" --> Reason["ລະບຸເຫດຜົນການປະຕິເສດ\nສະຖານະ = 'R' (Rejected)"]
+    Reason --> BranchFix["ສາຂາແກ້ໄຂ ແລະ ສົ່ງຄືນໃໝ່"]
     BranchFix --> BranchSubmit
-    
-    MKDecision -- "Approve" --> StatusA["🟢 Approved by MK\nStatus = 'A' (Active)"]
-    
+
+    MKDecision -- "ອະນຸມັດ (Approve)" --> StatusA["ອະນຸມັດໂດຍ MK\nສະຖານະ = 'A' (Active)"]
+
     %% Live Map
-    MKDirect --> LiveMap["🗺️ LIVE ON CUSTOMER MAP\n(Search, Promo, Navigation)"]
+    MKDirect --> LiveMap["ສະແດງຜົນໃນ LDB Trust"]
     StatusA --> LiveMap
-    LiveMap --> End(["🏁 End"])
+    LiveMap --> End(["ສິ້ນສຸດ"])
+
 ```
 
----
+## ຂັ້ນຕອນທີ 2: ການແກ້ໄຂຂໍ້ມູນ (ກໍລະນີສະຖານະປ່ຽນຈາກ 'A' ເປັນ 'P')
 
-## 🔄 FLOW 2: Edit Lifecycle (When Status Changes from 'A' to 'P')
+ເມື່ອສະຖານທີ່ທີ່ມີສະຖານະ **ເປີດໃຊ້ງານ (`A` - Active)** ຢູ່ໃນ LDB Trust ມີການປັບປຸງແກ້ໄຂຂໍ້ມູນ, ລະບົບຈະບັງຄັບໃຊ້ກົດລະບຽບເພື່ອຮັບປະກັນຄຸນນະພາບ ແລະ ປົກປ້ອງພາບລັກຂອງອົງກອນ ດັ່ງນີ້:
 
-When an existing location that is already **Active (`A`)** on the live map gets updated, the system enforces quality and brand protection rules:
+### 1. ເຫດຜົນທີ່ສະຖານະຕ້ອງປ່ຽນຈາກ `A` ກັບຄືນເປັນ `P`
 
-### 1. Why does status revert from `A` to `P`?
-* **Data & Brand Integrity:** To prevent unverified details (e.g., incorrect phone numbers, moved GPS pins, or unauthorized discount claims) from showing up immediately on customer mobile apps.
-* **Dual Control:** Any modifications submitted by **Branch Staff** must be re-verified by **Marketing (MK)**.
+- **ຄວາມຖືກຕ້ອງຂອງຂໍ້ມູນ ແລະ ພາບລັກອົງກອນ:** ເພື່ອປ້ອງກັນບໍ່ໃຫ້ຂໍ້ມູນທີ່ຍັງບໍ່ທັນຜ່ານການກວດສອບ (ເຊັ່ນ: ເບີໂທລະສັບບໍ່ຖືກຕ້ອງ, ການຍ້າຍຈຸດພິກັດ GPS ຜິດພາດ, ຫຼື ການລະບຸສ່ວນຫຼຸດທີ່ບໍ່ໄດ້ຮັບອະນຸຍາດ) ສະແດງຜົນຂຶ້ນທັນທີໃນແອັບພລິເຄຊັນຂອງລູກຄ້າ.
 
-### 2. Edit Rules by Role
-* **If Branch Staff edits an Active (`A`) Merchant:**
-  * ⚠️ **Status reverts from `A` (Active) ➔ `P` (Pending Re-Approval).**
-  * The location is temporarily paused/hidden from the public map until re-verified.
-  * The record re-enters the **Marketing Department (MK) Review Queue**.
-  * **MK Decision:**
-    * **Approve:** Status returns to **`A` (Active)** with the newly updated information live on the map.
-    * **Reject:** Status becomes **`R` (Rejected)** with comments explaining why the edits were refused.
-* **If Marketing Department (MK - Admin) edits an Active (`A`) Merchant:**
-  * ✅ **Direct Update:** Status remains **`A` (Active)**. No approval needed. Changes appear instantly on the map.
-* **If Branch Supervision (BR) or MK edits an Active (`A`) Branch:**
-  * ✅ **Direct Update:** Both departments possess Admin authority; modifications remain **`A` (Active)** directly.
+- **ການຄວບຄຸມສອງຊັ້ນ (Dual Control):** ທຸກການແກ້ໄຂຂໍ້ມູນທີ່ດຳເນີນການໂດຍ **ພະນັກງານສາຂາ** ຈະຕ້ອງຜ່ານການກວດສອບຄືນໃໝ່ໂດຍ **ຂະເເໜງການຕະຫຼາດ** ສະເໝີ.
 
-### 3. Edit & Re-Approval Flowchart (`A` ➔ `P` ➔ `A` / `R`) (Horizontal)
+### 2. ກົດລະບຽບການແກ້ໄຂຂໍ້ມູນຕາມພາລະບົດບາດ
+
+- **ກໍລະນີພະນັກງານສາຂາ ແກ້ໄຂຂໍ້ມູນຮ້ານຄ້າທີ່ເປີດໃຊ້ງານຢູ່ (`A`):**
+  - **ສະຖານະຈະປ່ຽນຈາກ `A` (Active) ກັບຄືນເປັນ `P` (Pending Re-Approval).**
+
+  - ສະຖານທີ່ດັ່ງກ່າວຈະຖືກລະງັບ ຫຼື ເຊື່ອງໄວ້ຈາກແຜນທີ່ສາທາລະນະຊົ່ວຄາວ ຈົນກວ່າຈະຜ່ານການກວດສອບຄືນໃໝ່.
+
+  - ລາຍການດັ່ງກ່າວຈະຖືກສົ່ງເຂົ້າໄປໃນ **ລາຍການລໍຖ້າກວດສອບຂອງຂະເເໜງການຕະຫຼາດ**.
+
+  - **ການຕັດສິນໃຈຂອງຂະເເໜງການຕະຫຼາດ:**
+    - **ອະນຸມັດ (Approve):** ສະຖານະຈະກັບຄືນເປັນ **`A` (Active)** ພ້ອມທັງສະແດງຂໍ້ມູນໃໝ່ທີ່ຖືກອັບເດດລົງໃນແຜນທີ່.
+
+    - **ປະຕິເສດ (Reject):** ສະຖານະຈະປ່ຽນເປັນ **`R` (Rejected)** ພ້ອມຄຳອະທິບາຍເຫດຜົນທີ່ບໍ່ອະນຸມັດການແກ້ໄຂດັ່ງກ່າວ.
+
+- **ກໍລະນີຂະເເໜງການຕະຫຼາດ ແກ້ໄຂຂໍ້ມູນຮ້ານຄ້າທີ່ເປີດໃຊ້ງານຢູ່ (`A`):**
+  - **ອັບເດດໂດຍກົງ:** ສະຖານະຍັງຄົງເປັນ **`A` (Active)** ຄືເກົ່າ ໂດຍບໍ່ຕ້ອງລໍຖ້າການອະນຸມັດ ແລະ ຂໍ້ມູນທີ່ປ່ຽນແປງຈະສະແດງຜົນໃນແຜນທີ່ທັນທີ.
+
+- **ກໍລະນີຂະເເໜງຄຸ້ມຄອງສາຂາ ຫຼື ຂະເເໜງການຕະຫຼາດ ແກ້ໄຂຂໍ້ມູນສາຂາທີ່ເປີດໃຊ້ງານຢູ່ (`A`):**
+  - **ອັບເດດໂດຍກົງ:** ເນື່ອງຈາກທັງສອງຂະເເໜງມີສິດເປັນ Admin, ການແກ້ໄຂຂໍ້ມູນຈະຍັງຄົງຮັກສາສະຖານະ **`A` (Active)** ໂດຍກົງທັນທີ.
+
+### 3. ແຜນວາດຂັ້ນຕອນການແກ້ໄຂ ແລະ ການຂໍອະນຸມັດຄືນໃໝ່ (`A` -> `P` -> `A` / `R`)
 
 ```mermaid
 flowchart LR
-    Active(["🟢 Active ('A')\non Live Map"]) --> ClickEdit["✏️ Edit Location"]
-    ClickEdit --> WhoEdits{"👤 Who edits?"}
-    
+    Active(["ເປີດໃຊ້ງານ ('A')\nໃນ Trust"]) --> ClickEdit["ແກ້ໄຂຂໍ້ມູນສະຖານທີ່"]
+    ClickEdit --> WhoEdits{"ຜູ້ດຳເນີນການແກ້ໄຂ"}
+
     %% Branch Staff Path
-    WhoEdits -- "🏢 Branch Staff" --> BranchSave["💾 Branch Saves Changes"]
-    BranchSave --> RevertP["🟡 Reverts: 'A' ➔ 'P'\n(Pending MK Re-Approval)"]
-    RevertP --> MKReview["📋 MK Review Queue\n(Inspects Changes)"]
-    MKReview --> Decision{"⚖️ MK Decision"}
-    
-    Decision -- "Reject" --> RevertR["🔴 Status = 'R' (Rejected)\n(Reason sent to Branch)"]
-    RevertR --> BranchFix["✏️ Branch Fixes & Resubmits"]
+    WhoEdits -- "ພະນັກງານສາຂາ" --> BranchSave["ສາຂາບັນທຶກການປ່ຽນແປງ"]
+    BranchSave --> RevertP["ສະຖານະປ່ຽນ: 'A' ➔ 'P'\n(ລໍຖ້າ ຂະເເໜງການຕະຫຼາດອະນຸມັດຄືນໃໝ່)"]
+    RevertP --> MKReview["ລາຍການລໍຖ້າກວດສອບຂອງຂະເເໜງການຕະຫຼາດ\n(ກວດສອບຂໍ້ມູນທີ່ປ່ຽນແປງ)"]
+    MKReview --> Decision{"ການຕັດສິນໃຈຂອງ ຂະເເໜງການຕະຫຼາດ"}
+
+    Decision -- "ປະຕິເສດ (Reject)" --> RevertR["ສະຖານະ = 'R' (Rejected)\n(ສົ່ງເຫດຜົນໃຫ້ສາຂາ)"]
+    RevertR --> BranchFix["ສາຂາແກ້ໄຂ ແລະ ສົ່ງຄືນໃໝ່"]
     BranchFix --> RevertP
-    
-    Decision -- "Approve" --> ReturnA["🟢 Status returns to 'A' (Active)"]
-    
+
+    Decision -- "ອະນຸມັດ (Approve)" --> ReturnA["ສະຖານະກັບຄືນເປັນ 'A' (Active)"]
+
     %% Admin Direct Path
-    WhoEdits -- "👑 Admin (MK or BR)" --> AdminSave["💾 Admin Saves Changes"]
-    AdminSave --> KeepA["🟢 Status remains 'A' (Active)\n(Direct save, no queue)"]
-    
+    WhoEdits -- "Admin (MK ຫຼື BR)" --> AdminSave["Admin ບັນທຶກການປ່ຽນແປງ"]
+    AdminSave --> KeepA["ສະຖານະຍັງຄົງເປັນ 'A' (Active)\n(ບັນທຶກໂດຍກົງ, ບໍ່ຕ້ອງລໍຖ້າຄິວ)"]
+
     %% Live Output
-    ReturnA --> LiveMap["🗺️ LIVE ON CUSTOMER MAP\n(Updated data visible)"]
+    ReturnA --> LiveMap["ສະແດງຜົນໃນແຜນທີ່ລູກຄ້າ\n(ເຫັນຂໍ້ມູນທີ່ອັບເດດໃໝ່)"]
     KeepA --> LiveMap
-```
-
----
-
-## 🏦 FLOW 3: Branch Locations (ສາຂາ & ໜ່ວຍບໍລິການ)
-
-For bank branches, management is shared between two specialized Admin departments:
-1. **Branch Supervision Department (BR / ພະແນກຄຸ້ມຄອງສາຂາ):** Manages official **Data & Operations**.
-2. **Marketing Department (MK / ພະແນກການຕະຫຼາດ):** Manages **Visual Media & Promotions**.
-
-### 1. Department Responsibilities Split
 
 ```
-                         🏦 Branch Location Setup
-                                    │
-         ┌──────────────────────────┴──────────────────────────┐
-         ▼                                                     ▼
- 📋 Branch Supervision (BR)                           🎨 Marketing Dept (MK)
-   [Data & Operational Admin]                             [Media & Promo Admin]
-   • Official Branch Name (Lao/EN)                       • Storefront & Building Photos
-   • Province, District, Village                         • Interior & Service Counter Photos
-   • Exact GPS Coordinates (Lat/Long)                    • Marketing Campaign Tags (e.g. Hot Deal)
-   • Contact Telephone Numbers                           • Promotional Event Dates & Details
-   • Official Opening & Closing Hours
-```
 
-### 2. Branch Collaboration Workflow
-* **Both BR and MK have Admin rights** for Branch locations:
-  * **No "Maker-Checker" wait queue** between external staff; both departments work as administrative partners.
-  * **BR** inputs or updates the verified operational data and physical GPS coordinates.
-  * **MK** uploads polished, brand-compliant photography and attaches seasonal marketing promotions.
-  * Status is maintained as **Active (`A`)** upon completion, ensuring customers always see accurate, high-quality branch profiles.
+## ຂັ້ນຕອນທີ 3: ສະຖານທີ່ສາຂາ ແລະ ໜ່ວຍບໍລິການ (Branch Locations)
 
-### 3. Branch Workflow Diagram (Horizontal & Easy to Read)
+ສຳລັບສາຂາ ແລະ ໜ່ວຍບໍລິການຂອງທະນາຄານ, ການຄຸ້ມຄອງແມ່ນຮັບຜິດຊອບຮ່ວມກັນລະຫວ່າງສອງຂະເເໜງຄຸ້ມຄອງ (Admin) ວິຊາສະເພາະ ຄື:
+
+1. **ຂະເເໜງຄຸ້ມຄອງສາຂາ (BR):** ຮັບຜິດຊອບຄຸ້ມຄອງ **ຂໍ້ມູນທາງການ ແລະ ການດຳເນີນງານ**.
+
+2. **ຂະເເໜງການຕະຫຼາດ (MK):** ຮັບຜິດຊອບຄຸ້ມຄອງ **ສື່ຮູບພາບ ແລະ ລາຍການສົ່ງເສີມການຂາຍ (ໂປຣໂມຊັນ)**.
+
+### 1. ການແບ່ງໜ້າທີ່ความຮັບຜິດຊອບລະຫວ່າງຂະເເໜງ
+
+| ຂະເເໜງຄຸ້ມຄອງສາຂາ (BR) \[ຜູ້ຄຸ້ມຄອງສາຂາ ແລະ ການດຳເນີນງານ\] | ຂະເເໜງການຕະຫຼາດ (MK) \[ຜູ້ຄຸ້ມຄອງສື່ ແລະ ໂປຣໂມຊັນ\] |
+| ------------------------------------------------------------ | --------------------------------------------------- |
+| \- ຊື່ສາຂາຢ່າງເປັນທາງການ (ພາສາລາວ / ພາສາອັງກິດ)              | \- ຮູບພາບໜ້າອາຄານ ແລະ ຕຶກສາຂາ                       |
+| \- ຂໍ້ມູນ ແຂວງ, ເມືອງ, ບ້ານ                                  | \- ຮູບພາບພາຍໃນ ແລະ ເຄົາເຕີບໍລິການ                   |
+| \- ພິກັດ GPS ທີ່ຊັດເຈນ (Latitude / Longitude)                | \- ປ້າຍກຳກັບແຄມເປນການຕະຫຼາດ |
+| \- ເບີໂທລະສັບຕິດຕໍ່                                           |
+| \- ເວລາເປີດ ແລະ ປິດບໍລິການຢ່າງເປັນທາງການ                     |                                                     |
+
+### 2. ຂັ້ນຕອນການປະສານງານສຳລັບຂໍ້ມູນສາຂາ
+
+- **ທັງຂະເເໜງຄຸ້ມຄອງສາຂາ ແລະ ຂະເເໜງການຕະຫຼາດ ມີສິດເປັນ Admin** ສຳລັບສະຖານທີ່ປະເພດສາຂາ:
+  - **ບໍ່ມີຂັ້ນຕອນການລໍຖ້າອະນຸມັດ (Maker-Checker)** ລະຫວ່າງພະນັກງານພາຍນອກ; ທັງສອງຂະເເໜງເຮັດວຽກຮ່ວມກັນໃນຖານະຜູ້ຄຸ້ມຄອງລະບົບ.
+
+  - **ຂະເເໜງຄຸ້ມຄອງສາຂາ** ປ້ອນ ຫຼື ອັບເດດຂໍ້ມູນການດຳເນີນງານທີ່ກວດສອບແລ້ວ ລວມທັງຈຸດພິກັດ GPS ຕົວຈິງ.
+
+  - **ຂະເເໜງການຕະຫຼາດ** ອັບໂຫຼດຮູບພາບທີ່ຖືກຕ້ອງຕາມມາດຕະຖານຂອງອົງກອນ ແລະ ຕິດຄັດລາຍການໂປຣໂມຊັນຕາມໄລຍະເວລາ.
+
+  - ສະຖານະຈະຖືກຮັກສາໄວ້ເປັນ **ເປີດໃຊ້ງານ (`A` - Active)** ເມື່ອດຳເນີນການສຳເລັດ ເພື່ອຮັບປະກັນວ່າລູກຄ້າຈະເຫັນຂໍ້ມູນສາຂາທີ່ຖືກຕ້ອງ.
+
+### 3. ແຜນວາດຂັ້ນຕອນການເຮັດວຽກສຳລັບສາຂາ
 
 ```mermaid
 flowchart LR
-    Start(["🚀 Start"]) --> BR["🏢 1. Branch Supervision (BR)\nInputs Info, Address & Pins GPS"]
-    BR --> MK["🎨 2. Marketing Dept (MK)\nUploads Photos & Promo Tag"]
-    MK --> Publish["💾 3. Direct Publish (Admin)\nStatus = 'A' (Active)"]
-    Publish --> LiveMap["🗺️ Live on Customer Map\n(Hours, Photos & Directions)"]
-    LiveMap --> End(["🏁 End"])
+    Start(["ເລີ່ມຕົ້ນ"]) --> BR["1. ຂະເເໜງຄຸ້ມຄອງສາຂາ (BR)\nປ້ອນຂໍ້ມູນ, ທີ່ຢູ່ ແລະ ປັກໝຸດ GPS"]
+    BR --> MK["2. ຂະເເໜງການຕະຫຼາດ (MK)\nອັບໂຫຼດຮູບພາບ ແລະ ປ້າຍໂປຣໂມຊັນ"]
+    MK --> Publish["3. ເຜີຍແຜ່ໂດຍກົງ (Admin)\nສະຖານະ = 'A' (Active)"]
+    Publish --> LiveMap["ສະແດງຜົນໃນແຜນທີ່ລູກຄ້າ\n(ເວລາເຮັດວຽກ, ຮູບພາບ ແລະ ການນຳທາງ)"]
+    LiveMap --> End(["ສິ້ນສຸດ"])
+
 ```
 
----
+## ຕາຕະລາງສະຫຼຸບປຽບທຽບ: ຮ້ານຄ້າ ແລະ ສາຂາ
 
-## 📊 Summary Comparison: Merchant vs. Branch
-
-| Attribute | 🏪 Merchant (ຮ້ານຄ້າ) | 🏦 Branch (ສາຂາ) |
-| :--- | :--- | :--- |
-| **Admin Authority** | **Marketing Department (MK)** | **Branch Supervision (BR)** & **Marketing (MK)** |
-| **Can Branch Staff Create?** | ✅ Yes (Submits as `P` Pending) | ❌ Managed centrally by BR & MK Admins |
-| **Can Branch Staff Edit?** | ✅ Yes (Status changes **`A` ➔ `P`**) | ❌ Managed centrally by BR & MK Admins |
-| **Approval on Edit?** | • **If MK edits:** ❌ No (Stays `A`)<br>• **If Branch edits:** ✅ Yes (**`A` ➔ `P` ➔ MK Approves**) | ❌ No (Direct Admin management) |
-| **Data Responsibility** | Branch submits initial; MK verifies | **BR:** Address, GPS pin, phone, opening hours |
-| **Image Responsibility** | Branch/MK upload storefront photo | **MK:** Professional building & promotional media |
-| **Initial Creation Flow** | `P` (Pending) ➔ `A` (Approved) | Direct `A` (Active) upon completion |
-
----
-
-## 🛠️ Quick SOP by Department
-
-### 📢 Marketing Department (MK)
-1. **For Merchants (Initial & Edits):**
-   * Create partner merchants directly with instant status **`A`**.
-   * Edit existing merchants directly (status stays **`A`**).
-   * Open **Service Points** > filter by `Pending` to review branch submissions and edits:
-     * Review changes made by the branch (GPS coordinates, phone, images).
-     * Click **Approve** to publish/restore to mobile app.
-     * Click **Reject** and provide clear feedback if changes are unacceptable.
-2. **For Branches:**
-   * Review branch entries created by **BR**.
-   * Upload approved, high-resolution building photography and promotional banners.
-
-### 🏢 Branch Supervision Department (BR)
-1. **For Branches:**
-   * Create and maintain all official branch records.
-   * Ensure GPS pins match physical building coordinates accurately.
-   * Keep opening/closing hours and phone numbers up to date.
-
-### 🏪 Branch Staff
-1. **For Merchants:**
-   * Enter newly acquired local merchant details, pin their GPS, upload a storefront picture, and submit (`P`).
-   * When editing an existing Active (`A`) merchant, be aware that **status will change back to `P` (Pending)** and will require Marketing approval again.
-   * If rejected (`R`), check MK feedback, correct the data, and resubmit.
+| ຫົວຂໍ້ປຽບທຽບ                            | ຮ້ານຄ້າ (Merchant)                                                                                             | ສາຂາ (Branch)                                           |
+| --------------------------------------- | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| **ສິດຄຸ້ມຄອງລະບົບ (Admin)**             | **ຂະເເໜງການຕະຫຼາດ (MK)**                                                                                       | **ຂະເເໜງຄຸ້ມຄອງສາຂາ (BR)** ແລະ **ຂະເເໜງການຕະຫຼາດ (MK)** |
+| **ພະນັກງານສາຂາສາມາດສ້າງຂໍ້ມູນໄດ້ບໍ່?**  | ໄດ້ (ສົ່ງເຂົ້າລະບົບໃນສະຖານະ `P` ລໍຖ້າອະນຸມັດ)                                                                  | ບໍ່ໄດ້ (ຄຸ້ມຄອງຈາກສູນກາງໂດຍ Admin ຂອງຄຸມຄອງສາຂາ ແລະ ຂະເເໜງ ການຕະຫຼາດ)        |
+| **ພະນັກງານສາຂາສາມາດແກ້ໄຂຂໍ້ມູນໄດ້ບໍ່?** | ໄດ້ (ສະຖານະຈະປ່ຽນຈາກ **`A` -> `P`**)                                                                           | ບໍ່ໄດ້ (ຄຸ້ມຄອງຈາກສູນກາງໂດຍ Admin ຂອງຄຸມຄອງສາຂາ ແລະ ຂະເເໜງ ການຕະຫຼາດ)        |
+| **ຕ້ອງຂໍອະນຸມັດເມື່ອມີການແກ້ໄຂບໍ່?**    | \- **ຖ້າ ຂະເເໜງການຕະຫຼາດ (MK) ແກ້ໄຂ:** ບໍ່ຕ້ອງ (ຄົງສະຖານະ `A`) \- **ຖ້າສາຂາແກ້ໄຂ:** ຕ້ອງຂໍອະນຸມັດ (**`A` -> `P` -> MK ອະນຸມັດ**) | ບໍ່ຕ້ອງ (ເປັນການຈັດການໂດຍກົງຂອງລະດັບ Admin)             |
+| **ຄວາມຮັບຜິດຊອບດ້ານຂໍ້ມູນ**             | ສາຂາສົ່ງຂໍ້ມູນເບື້ອງຕົ້ນ; ຂະເເໜງການຕະຫຼາດ (MK) ກວດສອບ                                                          | **ຂະເເໜງຄຸ້ມຄອງສາຂາ (BR):** ທີ່ຢູ່, ຈຸດ GPS, ເບີໂທ, ເວລາເປີດ-ປິດ     |
+| **ຄວາມຮັບຜິດຊອບດ້ານຮູບພາບ**             | ສາຂາ ຫຼື ຂະເເໜງການຕະຫຼາດ (MK) ອັບໂຫຼດຮູບພາບໜ້າຮ້ານ                                                             | **ຂະເເໜງການຕະຫຼາດ (MK):** ຮູບພາບອາຄານມາດຕະຖານ ແລະ ສື່ໂຄສະນາ        |
+| **ຂັ້ນຕອນການສ້າງຂໍ້ມູນເບື້ອງຕົ້ນ**      | `P` (ລໍຖ້າອະນຸມັດ) -> `A` (ອະນຸມັດແລ້ວ)                                                                        | ເປັນສະຖານະ `A` (Active) ໂດຍກົງເມື່ອປ້ອນຂໍ້ມູນສຳເລັດ     |
