@@ -52,7 +52,6 @@ graph TD
     Mapper -.-> DomainModel
 ```
 
-
 Architectural Layers & Responsibilities
 
 Layer
@@ -109,7 +108,7 @@ stores/, pages/, components/
 
 Reactive state & visual UI
 
-Pinia Setup Stores wrap repo calls in useDialog().catchError(). UI uses <GlobalCustom*>.
+Pinia Setup Stores wrap repo calls in useDialog().catchError(). UI uses <GlobalCustom\*>.
 
 4. Testing Layer
 
@@ -121,81 +120,82 @@ Every feature must include unit tests for its Mapper, Repository, and Pinia Stor
 
 📁 2. Standard Folder Structure
 
+```
 source/
-├── assets/                       # Static styles, global SCSS variables, brand assets
-│   ├── scss/                     # Custom SCSS stylesheets & theme overrides
-│   └── images/                   # Local static illustrations & icons
+├── assets/ # Static styles, global SCSS variables, brand assets
+│ ├── scss/ # Custom SCSS stylesheets & theme overrides
+│ └── images/ # Local static illustrations & icons
 │
-├── core/                         # 🧱 0. CORE INFRASTRUCTURE
-│   ├── network/
-│   │   ├── apiClient.ts          # apiRequest<T>() wrapper, toFormData(), ApiError class
-│   │   └── index.ts              # Network exports
-│   └── types/
-│       └── common.dto.ts         # CommonResponseData<T> { code, desc, respId, data }
+├── core/ # 🧱 0. CORE INFRASTRUCTURE
+│ ├── network/
+│ │ ├── apiClient.ts # apiRequest<T>() wrapper, toFormData(), ApiError class
+│ │ └── index.ts # Network exports
+│ └── types/
+│ └── common.dto.ts # CommonResponseData<T> { code, desc, respId, data }
 │
-├── domain/                       # 🧠 1. DOMAIN LAYER (UI & Business Contracts)
-│   └── models/
-│       ├── item.model.ts         # Clean UI Models & Filter interfaces (e.g., ItemModel)
-│       └── index.ts              # Re-exports all domain models
+├── domain/ # 🧠 1. DOMAIN LAYER (UI & Business Contracts)
+│ └── models/
+│ ├── item.model.ts # Clean UI Models & Filter interfaces (e.g., ItemModel)
+│ └── index.ts # Re-exports all domain models
 │
-├── data/                         # 🔌 2. DATA LAYER (Backend Communication & Mapping)
-│   ├── dtos/                     # API Request & Response DTOs (1 file per feature)
-│   │   ├── item.dto.ts           # SaveItemReqDTO, ItemRespDTO
-│   │   └── index.ts              # Central DTO registry
-│   │
-│   ├── mappers/                  # Data Transformers (DTO <-> Domain Model)
-│   │   ├── item.mapper.ts        # Sanitizes nulls ("-"), formats numbers/dates/status
-│   │   └── index.ts              # Central mapper registry
-│   │
-│   └── repositories/             # API Gateways (Calls apiRequest + Mapper)
-│       ├── item.repo.ts          # Feature API calls returning clean Domain Models
-│       └── index.ts              # Central repository registry
+├── data/ # 🔌 2. DATA LAYER (Backend Communication & Mapping)
+│ ├── dtos/ # API Request & Response DTOs (1 file per feature)
+│ │ ├── item.dto.ts # SaveItemReqDTO, ItemRespDTO
+│ │ └── index.ts # Central DTO registry
+│ │
+│ ├── mappers/ # Data Transformers (DTO <-> Domain Model)
+│ │ ├── item.mapper.ts # Sanitizes nulls ("-"), formats numbers/dates/status
+│ │ └── index.ts # Central mapper registry
+│ │
+│ └── repositories/ # API Gateways (Calls apiRequest + Mapper)
+│ ├── item.repo.ts # Feature API calls returning clean Domain Models
+│ └── index.ts # Central repository registry
 │
-├── composables/                  # 🛠️ SHARED LOGIC (Auto-imported by Nuxt 3)
-│   ├── useDialog.ts              # Global dialog & error boundary (useDialog().catchError())
-│   ├── useDirtyForm.ts           # Form snapshot & dirty-checking utility
-│   ├── useAuth.ts                # Session state, authentication tokens, user roles
-│   └── useDate.ts                # Date formatting and manipulation utilities
+├── composables/ # 🛠️ SHARED LOGIC (Auto-imported by Nuxt 3)
+│ ├── useDialog.ts # Global dialog & error boundary (useDialog().catchError())
+│ ├── useDirtyForm.ts # Form snapshot & dirty-checking utility
+│ ├── useAuth.ts # Session state, authentication tokens, user roles
+│ └── useDate.ts # Date formatting and manipulation utilities
 │
-├── stores/                       # 📦 3. PRESENTATION STATE (Auto-imported Pinia Setup Stores)
-│   ├── item.store.ts             # Feature Setup Store (state + actions)
-│   └── index.ts                  # Store exports
+├── stores/ # 📦 3. PRESENTATION STATE (Auto-imported Pinia Setup Stores)
+│ ├── item.store.ts # Feature Setup Store (state + actions)
+│ └── index.ts # Store exports
 │
-├── components/                   # 🎨 3. PRESENTATION UI (Vue 3 Components)
-│   ├── global/                   # Auto-imported Design System wrappers (Prefixed Global*)
-│   ├── dialog/                   # Shared alert, confirmation, and overlay dialogs
-│   │   ├── CardSuccess.vue       # Operation success modal
-│   │   ├── CardWarning.vue       # Warning / confirmation modal
-│   │   └── Overlay.vue           # Global loading overlay spinner
-│   └── {feature}/                # Feature-specific child components (e.g., components/items/)
+├── components/ # 🎨 3. PRESENTATION UI (Vue 3 Components)
+│ ├── global/ # Auto-imported Design System wrappers (Prefixed Global*)
+│ ├── dialog/ # Shared alert, confirmation, and overlay dialogs
+│ │ ├── CardSuccess.vue # Operation success modal
+│ │ ├── CardWarning.vue # Warning / confirmation modal
+│ │ └── Overlay.vue # Global loading overlay spinner
+│ └── {feature}/ # Feature-specific child components (e.g., components/items/)
 │
-├── pages/                        # 📄 ROUTES (Nuxt 3 File-based Routing)
-│   ├── index.vue                 # Dashboard
-│   ├── login.vue                 # Authentication page
-│   └── {feature}/                # Feature route directory (e.g., pages/items/index.vue)
+├── pages/ # 📄 ROUTES (Nuxt 3 File-based Routing)
+│ ├── index.vue # Dashboard
+│ ├── login.vue # Authentication page
+│ └── {feature}/ # Feature route directory (e.g., pages/items/index.vue)
 │
-├── tests/                        # 🧪 4. TESTING LAYER (Vitest Unit Tests)
-│   └── unit/
-│       └── {feature}/            # Feature unit test suite (e.g., tests/unit/item/)
-│           ├── item.mapper.spec.ts
-│           ├── item.repo.spec.ts
-│           └── item.store.spec.ts
+├── tests/ # 🧪 4. TESTING LAYER (Vitest Unit Tests)
+│ └── unit/
+│ └── {feature}/ # Feature unit test suite (e.g., tests/unit/item/)
+│ ├── item.mapper.spec.ts
+│ ├── item.repo.spec.ts
+│ └── item.store.spec.ts
 │
-├── scripts/                      # ⚙️ CLI AUTOMATION
-│   └── make-feature.mjs          # Scaffolds Domain, DTO, Mapper, Repo, Store & Unit Tests
+├── scripts/ # ⚙️ CLI AUTOMATION
+│ └── make-feature.mjs # Scaffolds Domain, DTO, Mapper, Repo, Store & Unit Tests
 │
-├── config/                       # Environment configuration files (dev, staging, prod)
-├── constants/                    # Application constants, enum mappings, and color tokens
-├── layouts/                      # Nuxt Layouts (default admin shell, auth screen)
-├── middleware/                   # Nuxt Route Guards (auth check, role-based access)
-├── plugins/                      # Nuxt Plugins (Vuetify, Viewer.js, etc.)
-├── utils/                        # General pure helper functions (validators, exporters)
-├── app.vue                       # Nuxt root component
-├── nuxt.config.ts                # Nuxt configuration
-├── vitest.config.ts              # Vitest unit test configuration
-├── package.json                  # Dependencies and scripts
-└── tsconfig.json                 # TypeScript compiler configuration
-
+├── config/ # Environment configuration files (dev, staging, prod)
+├── constants/ # Application constants, enum mappings, and color tokens
+├── layouts/ # Nuxt Layouts (default admin shell, auth screen)
+├── middleware/ # Nuxt Route Guards (auth check, role-based access)
+├── plugins/ # Nuxt Plugins (Vuetify, Viewer.js, etc.)
+├── utils/ # General pure helper functions (validators, exporters)
+├── app.vue # Nuxt root component
+├── nuxt.config.ts # Nuxt configuration
+├── vitest.config.ts # Vitest unit test configuration
+├── package.json # Dependencies and scripts
+└── tsconfig.json # TypeScript compiler configuration
+```
 
 🧩 3. Global UI Component Reference
 
@@ -213,19 +213,13 @@ Layout & Cards
 
 Standard page header bar with title, subtitle, and #action slot.
 
-
-
 <GlobalCustomCardFilter>
 
 Config-driven search & filter bar with automatic required validation.
 
-
-
 <GlobalCustomCardTable>
 
 Table card wrapper displaying total record count and export slot.
-
-
 
 <GlobalCustomDialogCard>
 
@@ -237,13 +231,9 @@ Tables & Tags
 
 Standardized data table with loading states and custom cell slots.
 
-
-
 <GlobalTablePagination>
 
 Reusable pagination control component.
-
-
 
 <GlobalCustomStatusTag>
 
@@ -255,19 +245,13 @@ Form Controls
 
 Input text field with built-in responsive grid column sizing.
 
-
-
 <GlobalCustomTextArea>
 
 Multi-line text field wrapper.
 
-
-
 <GlobalCustomDropdown>
 
 Select dropdown wrapper with standardized options binding.
-
-
 
 <GlobalCustomDatePicker>
 
@@ -279,8 +263,6 @@ Media & Upload
 
 Drag-and-drop file/image uploader with ordering and deletion.
 
-
-
 <GlobalCustomImageCard>
 
 Thumbnail display card integrated with v-viewer modal preview.
@@ -291,13 +273,9 @@ Actions & Alerts
 
 Standard action button with consistent typography and ripple.
 
-
-
 <GlobalCustomIconButton>
 
 Icon button with built-in tooltip and hover feedback.
-
-
 
 <GlobalAppDialog>
 
@@ -327,13 +305,13 @@ sequenceDiagram
     UI->>UI: Render via GlobalCustom* components
 ```
 
-
 Step 1: Define Domain Models & Data DTOs (domain/ & data/dtos/)
 
 Separate what the UI needs (domain/models/) from what the Backend expects/returns (data/dtos/).
 
 A. Domain Model (domain/models/item.model.ts)
 
+```ts
 export type ItemStatus = "A" | "I";
 
 export interface ItemModel {
@@ -353,12 +331,13 @@ export interface ItemFilter {
   page?: number;
   limit?: number;
 }
-
+```
 
 B. Data Transfer Objects (data/dtos/item.dto.ts)
 
 Combine Request and Response interfaces for a feature into a single file:
 
+```ts
 export interface SaveItemReqDTO {
   id?: string | number;
   titleLo: string;
@@ -380,12 +359,13 @@ export interface ItemRespDTO {
   createdAt?: string;
   imageUrl?: string | null;
 }
-
+```
 
 Step 2: Implement the Mapper (data/mappers/)
 
 The Mapper encapsulates default fallbacks ("-"), localized fields, and formatting rules so raw backend quirks never leak into Stores or Components.
 
+```ts
 // data/mappers/item.mapper.ts
 import type { ItemRespDTO } from "@/data/dtos/item.dto";
 import type { ItemModel } from "@/domain/models/item.model";
@@ -411,12 +391,13 @@ export const itemMapper = {
     return dtos.map((item) => this.toDomain(item));
   },
 };
-
+```
 
 Export centrally in data/mappers/index.ts:
 
+```ts
 export { itemMapper } from "./item.mapper";
-
+```
 
 Step 3: Implement the Repository (data/repositories/)
 
@@ -425,6 +406,7 @@ Use apiRequest<T>() and toFormData(body) from @/core/network/apiClient. The repo
 [!IMPORTANT]
 NEVER write manual new FormData() or repetitive formData.append(...) lines. Always pass the typed DTO directly to toFormData(body).
 
+```ts
 // data/repositories/item.repo.ts
 import { apiRequest, toFormData } from "@/core/network/apiClient";
 import { itemMapper } from "@/data/mappers";
@@ -459,20 +441,22 @@ export const itemRepository = {
     return data;
   },
 };
-
+```
 
 Export centrally in data/repositories/index.ts:
 
+```ts
 export { itemRepository } from "./item.repo";
-
+```
 
 Step 4: Manage State in a Pinia Setup Store (stores/)
 
 Use Pinia Setup Syntax (ref, arrow functions) for clean TypeScript inference and Nuxt 3 auto-import support.
 
-[!IMPORTANT]
-Always wrap repository calls in useDialog().catchError(() => ...). This intercepts backend/network errors, displays standardized error alerts, and safely returns null without unhandled promise rejections.
+> [!IMPORTANT]
+> Always wrap repository calls in useDialog().catchError(() => ...). This intercepts backend/network errors, displays standardized error alerts, and safely returns null without unhandled promise rejections.
 
+```ts
 // stores/item.store.ts
 import { defineStore } from "pinia";
 import { itemRepository } from "@/data/repositories";
@@ -524,12 +508,13 @@ export const useItemStore = defineStore("itemStore", () => {
     saveItem,
   };
 });
-
+```
 
 Step 5: Build the UI with Global Components (pages/ & components/)
 
-Keep page components thin and declarative by leveraging Nuxt auto-imports and <GlobalCustom*> components.
+Keep page components thin and declarative by leveraging Nuxt auto-imports and <GlobalCustom\*> components.
 
+```vue
 <!-- pages/items/index.vue -->
 <script setup lang="ts">
 import type { FilterFieldConfig } from "@/components/global/CustomCardFilter.vue";
@@ -611,9 +596,10 @@ onMounted(() => {
         </template>
       </GlobalCustomTable>
     </GlobalCustomCardTable>
+
   </v-container>
 </template>
-
+```
 
 Step 6: Write Unit Tests (tests/unit/{feature}/)
 
@@ -645,6 +631,7 @@ Mock the Repository and useDialog(). Verify state transitions (loading, items), 
 
 A. Mapper Unit Test (tests/unit/item/item.mapper.spec.ts)
 
+```ts
 import { describe, it, expect } from "vitest";
 import { itemMapper } from "@/data/mappers/item.mapper";
 import type { ItemRespDTO } from "@/data/dtos/item.dto";
@@ -684,10 +671,11 @@ describe("itemMapper", () => {
     expect(result.statusTag).toBe("I");
   });
 });
-
+```
 
 B. Repository Unit Test (tests/unit/item/item.repo.spec.ts)
 
+```ts
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { itemRepository } from "@/data/repositories/item.repo";
 import * as apiClient from "@/core/network/apiClient";
@@ -718,10 +706,11 @@ describe("itemRepository", () => {
     expect(items[0].priceFormatted).toBe("1,500");
   });
 });
-
+```
 
 C. Store Unit Test (tests/unit/item/item.store.spec.ts)
 
+```ts
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { setActivePinia, createPinia } from "pinia";
 import { useItemStore } from "@/stores/item.store";
@@ -772,16 +761,18 @@ describe("useItemStore", () => {
     expect(store.loading).toBe(false);
   });
 });
-
+```
 
 ⚙️ 5. Automated Feature Scaffolding (CLI)
 
 To eliminate boilerplate, use the built-in generator script (scripts/make-feature.mjs) to scaffold all 5 Clean Architecture files plus the 3 unit test files automatically:
 
+```bash
 yarn make:feature <feature-name>
+
 # Example:
 yarn make:feature banner-promo
-
+```
 
 This single command generates:
 
@@ -821,6 +812,7 @@ Previewing: Use the v-viewer directive with <GlobalCustomImageCard>. Never build
 
 Avoid copy-pasting duplicate input fields across supported languages (Lao, English, Chinese, Vietnamese). Maintain a configuration array in <script setup> and loop dynamically:
 
+```vue
 <script setup lang="ts">
 const languageList = [
   { code: "lo", label: "Lao", key: "titleLo" },
@@ -843,12 +835,13 @@ const languageList = [
     </v-col>
   </v-row>
 </template>
-
+```
 
 5. Form Dirty-Checking via useDirtyForm Composable
 
 When editing an existing record, use the useDirtyForm composable (or snapshot comparison) to avoid unnecessary API calls when no fields were modified:
 
+```ts
 // composables/useDirtyForm.ts
 export const useDirtyForm = <T extends object>(formState: T) => {
   const initialSnapshot = ref(JSON.stringify(formState));
@@ -863,10 +856,11 @@ export const useDirtyForm = <T extends object>(formState: T) => {
 
   return { isDirty, resetSnapshot };
 };
-
+```
 
 Usage inside an edit page or modal:
 
+```ts
 const { isDirty } = useDirtyForm(form);
 
 const handleSubmit = async () => {
@@ -876,14 +870,16 @@ const handleSubmit = async () => {
   }
   await itemStore.saveItem(form);
 };
-
+```
 
 6. Pre-PR Verification (Type Safety & Unit Tests)
 
 Every Pull Request must pass both static type checking and the Vitest unit test suite with 0 errors before submission:
 
+```bash
 # 1. Verify TypeScript types
 yarn typecheck
 
 # 2. Run all unit tests
 yarn test:run
+```
