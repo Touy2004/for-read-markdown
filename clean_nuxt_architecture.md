@@ -10,13 +10,15 @@ Standard Folder Structure
 
 Global UI Component Reference
 
-End-to-End Implementation Flow (The 5 Steps)
+End-to-End Implementation Flow (The 6 Steps)
+
+Automated Feature Scaffolding (CLI)
 
 Core Development Standards & Best Practices
 
 🏛️ 1. Architecture Overview
 
-The application enforces a Clean Architecture divided into Core Infrastructure, Domain, Data, and Presentation layers. This decouples the user interface from backend data shapes, network communication, and business orchestration.
+The application enforces a Clean Architecture divided into Core Infrastructure, Domain, Data, Presentation, and Testing layers. This decouples the user interface from backend data shapes, network communication, and business orchestration while making every feature 100% unit-testable in isolation.
 
 ```mermaid
 graph TD
@@ -36,6 +38,12 @@ graph TD
         Repo --> Client["Core Network: apiClient.ts"]
         Mapper --> DTO["Request & Response DTOs"]
         Client --> Backend[("Backend REST API")]
+    end
+
+    subgraph TestingLayer ["Testing Layer"]
+        Tests["Vitest Unit Tests"] -.-> Store
+        Tests -.-> Repo
+        Tests -.-> Mapper
     end
 
     UI -.-> DomainModel
@@ -103,6 +111,14 @@ Reactive state & visual UI
 
 Pinia Setup Stores wrap repo calls in useDialog().catchError(). UI uses <GlobalCustom*>.
 
+4. Testing Layer
+
+tests/unit/
+
+Isolated unit testing (Vitest)
+
+Every feature must include unit tests for its Mapper, Repository, and Pinia Store.
+
 📁 2. Standard Folder Structure
 
 source/
@@ -158,6 +174,16 @@ source/
 │   ├── login.vue                 # Authentication page
 │   └── {feature}/                # Feature route directory (e.g., pages/items/index.vue)
 │
+├── tests/                        # 🧪 4. TESTING LAYER (Vitest Unit Tests)
+│   └── unit/
+│       └── {feature}/            # Feature unit test suite (e.g., tests/unit/item/)
+│           ├── item.mapper.spec.ts
+│           ├── item.repo.spec.ts
+│           └── item.store.spec.ts
+│
+├── scripts/                      # ⚙️ CLI AUTOMATION
+│   └── make-feature.mjs          # Scaffolds Domain, DTO, Mapper, Repo, Store & Unit Tests
+│
 ├── config/                       # Environment configuration files (dev, staging, prod)
 ├── constants/                    # Application constants, enum mappings, and color tokens
 ├── layouts/                      # Nuxt Layouts (default admin shell, auth screen)
@@ -166,6 +192,7 @@ source/
 ├── utils/                        # General pure helper functions (validators, exporters)
 ├── app.vue                       # Nuxt root component
 ├── nuxt.config.ts                # Nuxt configuration
+├── vitest.config.ts              # Vitest unit test configuration
 ├── package.json                  # Dependencies and scripts
 └── tsconfig.json                 # TypeScript compiler configuration
 
@@ -276,7 +303,7 @@ Icon button with built-in tooltip and hover feedback.
 
 Global SweetAlert modal notification wrapper.
 
-🚀 4. End-to-End Implementation Flow (The 5 Steps)
+🚀 4. End-to-End Implementation Flow (The 6 Steps)
 
 When building a new feature, follow this exact sequence. Note how the Repository automatically invokes the Mapper, keeping the Pinia Store lightweight and free of data-formatting logic.
 
@@ -291,8 +318,8 @@ sequenceDiagram
 
     UI->>Store: Call Action (e.g., fetchItems())
     Store->>Repo: Invoke inside useDialog().catchError()
-    Repo->>API: "apiRequest<T>() (with Bearer Token)"
-    API-->>Repo: "Raw JSON { code: '00', desc, data }"
+    Repo->>API: apiRequest&lt;T&gt;() (with Bearer Token)
+    API-->>Repo: Raw JSON { code: '00', desc, data }
     Repo->>Mapper: Pass unwrapped DTO to Mapper
     Mapper-->>Repo: Return sanitized DomainModel[]
     Repo-->>Store: Return clean DomainModel[]
@@ -344,13 +371,13 @@ export interface SaveItemReqDTO {
 
 export interface ItemRespDTO {
   id: number;
-  itemCode: string;
-  titleLo: string;
-  titleEn: string;
-  category: string;
-  price: number;
-  status: string; // "A" | "I"
-  createdAt: string;
+  itemCode?: string | null;
+  titleLo?: string | null;
+  titleEn?: string | null;
+  category?: string | null;
+  price?: number | null;
+  status?: string | null; // "A" | "I"
+  createdAt?: string;
   imageUrl?: string | null;
 }
 
@@ -381,7 +408,7 @@ export const itemMapper = {
 
   toDomainList(dtos?: ItemRespDTO[] | null): ItemModel[] {
     if (!Array.isArray(dtos)) return [];
-    return dtos.map(this.toDomain);
+    return dtos.map((item) => this.toDomain(item));
   },
 };
 
@@ -588,7 +615,193 @@ onMounted(() => {
 </template>
 
 
-🛡️ 5. Core Development Standards & Best Practices
+Step 6: Write Unit Tests (tests/unit/{feature}/)
+
+Every feature must include unit tests covering its three core logic layers using Vitest:
+
+Test File
+
+Target Layer
+
+What to Verify
+
+{feature}.mapper.spec.ts
+
+Data Mapper (data/mappers/)
+
+Pure function tests: verify DTO-to-Domain formatting, currency formatting, status tags ("A"/"I"), and null/empty fallback strings ("-").
+
+{feature}.repo.spec.ts
+
+Repository (data/repositories/)
+
+Mock apiRequest and toFormData. Verify endpoints, HTTP methods (GET/POST/DELETE), and that responses are mapped via the Mapper.
+
+{feature}.store.spec.ts
+
+Pinia Store (stores/)
+
+Mock the Repository and useDialog(). Verify state transitions (loading, items), error handling via dialog.catchError(), and post-save list refreshes.
+
+A. Mapper Unit Test (tests/unit/item/item.mapper.spec.ts)
+
+import { describe, it, expect } from "vitest";
+import { itemMapper } from "@/data/mappers/item.mapper";
+import type { ItemRespDTO } from "@/data/dtos/item.dto";
+
+describe("itemMapper", () => {
+  it("transforms valid DTO into formatted Domain Model", () => {
+    const dto: ItemRespDTO = {
+      id: 1,
+      itemCode: "ITM-001",
+      titleLo: "ກາເຟ",
+      titleEn: "Coffee",
+      price: 50000,
+      status: "A",
+      imageUrl: "https://example.com/coffee.png",
+    };
+
+    expect(itemMapper.toDomain(dto)).toEqual({
+      id: 1,
+      itemCode: "ITM-001",
+      titleLo: "ກາເຟ",
+      titleEn: "Coffee",
+      priceFormatted: "50,000",
+      isActive: true,
+      statusTag: "A",
+      imageUrl: "https://example.com/coffee.png",
+    });
+  });
+
+  it("applies safe fallbacks for null or missing properties", () => {
+    const dto: ItemRespDTO = { id: 2, status: "I" };
+    const result = itemMapper.toDomain(dto);
+
+    expect(result.itemCode).toBe("-");
+    expect(result.titleLo).toBe("-");
+    expect(result.priceFormatted).toBe("0");
+    expect(result.isActive).toBe(false);
+    expect(result.statusTag).toBe("I");
+  });
+});
+
+
+B. Repository Unit Test (tests/unit/item/item.repo.spec.ts)
+
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { itemRepository } from "@/data/repositories/item.repo";
+import * as apiClient from "@/core/network/apiClient";
+
+vi.mock("@/core/network/apiClient", () => ({
+  apiRequest: vi.fn(),
+  toFormData: vi.fn((body) => body),
+}));
+
+describe("itemRepository", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("getItems requests /items/list and maps response to Domain Models", async () => {
+    vi.mocked(apiClient.apiRequest).mockResolvedValueOnce({
+      code: "00",
+      desc: "Success",
+      data: [{ id: 1, itemCode: "C1", titleLo: "ລາວ", titleEn: "EN", price: 1500, status: "A" }],
+    });
+
+    const items = await itemRepository.getItems({ q: "C1" });
+
+    expect(apiClient.apiRequest).toHaveBeenCalledWith("/items/list", {
+      method: "GET",
+      query: { q: "C1" },
+    });
+    expect(items[0].priceFormatted).toBe("1,500");
+  });
+});
+
+
+C. Store Unit Test (tests/unit/item/item.store.spec.ts)
+
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { setActivePinia, createPinia } from "pinia";
+import { useItemStore } from "@/stores/item.store";
+import { itemRepository } from "@/data/repositories/item.repo";
+
+const mockSuccess = vi.fn();
+const mockCatchError = vi.fn((fn) => fn());
+
+vi.stubGlobal("useDialog", () => ({
+  catchError: mockCatchError,
+  success: mockSuccess,
+}));
+
+vi.mock("@/data/repositories/item.repo", () => ({
+  itemRepository: {
+    getItems: vi.fn(),
+    saveItem: vi.fn(),
+    deleteItem: vi.fn(),
+  },
+}));
+
+describe("useItemStore", () => {
+  beforeEach(() => {
+    setActivePinia(createPinia());
+    vi.clearAllMocks();
+  });
+
+  it("fetchItems updates state through useDialog().catchError()", async () => {
+    const mockData = [
+      {
+        id: 1,
+        itemCode: "ITM-1",
+        titleLo: "ລາວ",
+        titleEn: "EN",
+        priceFormatted: "1,000",
+        isActive: true,
+        statusTag: "A" as const,
+        imageUrl: "",
+      },
+    ];
+    vi.mocked(itemRepository.getItems).mockResolvedValueOnce(mockData);
+
+    const store = useItemStore();
+    await store.fetchItems();
+
+    expect(mockCatchError).toHaveBeenCalled();
+    expect(store.items).toEqual(mockData);
+    expect(store.loading).toBe(false);
+  });
+});
+
+
+⚙️ 5. Automated Feature Scaffolding (CLI)
+
+To eliminate boilerplate, use the built-in generator script (scripts/make-feature.mjs) to scaffold all 5 Clean Architecture files plus the 3 unit test files automatically:
+
+yarn make:feature <feature-name>
+# Example:
+yarn make:feature banner-promo
+
+
+This single command generates:
+
+domain/models/banner-promo.model.ts
+
+data/dtos/banner-promo.dto.ts
+
+data/mappers/banner-promo.mapper.ts
+
+data/repositories/banner-promo.repo.ts
+
+stores/banner-promo.store.ts
+
+tests/unit/banner-promo/banner-promo.mapper.spec.ts
+
+tests/unit/banner-promo/banner-promo.repo.spec.ts
+
+tests/unit/banner-promo/banner-promo.store.spec.ts
+
+🛡️ 6. Core Development Standards & Best Practices
 
 1. Zero Manual FormData Append
 
@@ -665,11 +878,12 @@ const handleSubmit = async () => {
 };
 
 
-6. Strict Type Safety
+6. Pre-PR Verification (Type Safety & Unit Tests)
 
-All code must pass static type checking cleanly:
+Every Pull Request must pass both static type checking and the Vitest unit test suite with 0 errors before submission:
 
+# 1. Verify TypeScript types
 yarn typecheck
 
-
-Ensure 0 errors before opening a Pull Request or submitting any work.
+# 2. Run all unit tests
+yarn test:run
