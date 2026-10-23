@@ -1,22 +1,21 @@
-Application Architecture & Development Guide
+# Application Architecture & Development Guide
 
 A clean, scalable, layered architectural framework for Nuxt 3 enterprise admin applications. This document serves as the standard development guide for internal engineers, external contributors, contractors, and partners.
 
-📑 Table of Contents
+---
 
-Architecture Overview
+## 📑 Table of Contents
 
-Standard Folder Structure
+- [🏛️ 1. Architecture Overview](#️-1-architecture-overview)
+- [📁 2. Standard Folder Structure](#-2-standard-folder-structure)
+- [🧩 3. Global UI Component Reference](#-3-global-ui-component-reference)
+- [🚀 4. End-to-End Implementation Flow (The 6 Steps)](#-4-end-to-end-implementation-flow-the-6-steps)
+- [⚙️ 5. Automated Feature Scaffolding (CLI)](#️-5-automated-feature-scaffolding-cli)
+- [🛡️ 6. Core Development Standards & Best Practices](#️-6-core-development-standards--best-practices)
 
-Global UI Component Reference
+---
 
-End-to-End Implementation Flow (The 6 Steps)
-
-Automated Feature Scaffolding (CLI)
-
-Core Development Standards & Best Practices
-
-🏛️ 1. Architecture Overview
+## 🏛️ 1. Architecture Overview
 
 The application enforces a Clean Architecture divided into Core Infrastructure, Domain, Data, Presentation, and Testing layers. This decouples the user interface from backend data shapes, network communication, and business orchestration while making every feature 100% unit-testable in isolation.
 
@@ -52,73 +51,21 @@ graph TD
     Mapper -.-> DomainModel
 ```
 
-Architectural Layers & Responsibilities
+### Architectural Layers & Responsibilities
 
-Layer
+| Layer | Location | Purpose | Strict Rules |
+| :--- | :--- | :--- | :--- |
+| **0. Core Infrastructure** | `core/` | Central HTTP client & base network types | Uses `apiRequest<T>()` and `toFormData()`. Handles auth tokens and response unwrapping. |
+| **1. Domain Layer** | `domain/models/` | Pure UI & business models | Strictly TypeScript interfaces and types. Completely decoupled from raw backend JSON shapes. |
+| **2. Data Layer (DTOs)** | `data/dtos/` | Backend API contracts (Request & Response) | Combines Request and Response payloads into a single `{feature}.dto.ts` file per domain. |
+| **2. Data Layer (Mappers)** | `data/mappers/` | Data sanitization & formatting | Transforms raw RespDTO into clean DomainModel (null fallbacks, currency/date formatting). |
+| **2. Data Layer (Repos)** | `data/repositories/` | Domain API gateways | Calls `apiRequest<T>()` and runs Mapper automatically. Always returns clean Domain Models. |
+| **3. Presentation Layer** | `stores/`, `pages/`, `components/` | Reactive state & visual UI | Pinia Setup Stores wrap repo calls in `useDialog().catchError()`. UI uses `<GlobalCustom*>`. |
+| **4. Testing Layer** | `tests/unit/` | Isolated unit testing (Vitest) | Every feature must include unit tests for its Mapper, Repository, and Pinia Store. |
 
-Location
+---
 
-Purpose
-
-Strict Rules
-
-0. Core Infrastructure
-
-core/
-
-Central HTTP client & base network types
-
-Uses apiRequest<T>() and toFormData(). Handles auth tokens and response unwrapping.
-
-1. Domain Layer
-
-domain/models/
-
-Pure UI & business models
-
-Strictly TypeScript interfaces and types. Completely decoupled from raw backend JSON shapes.
-
-2. Data Layer (DTOs)
-
-data/dtos/
-
-Backend API contracts (Request & Response)
-
-Combines Request and Response payloads into a single {feature}.dto.ts file per domain.
-
-2. Data Layer (Mappers)
-
-data/mappers/
-
-Data sanitization & formatting
-
-Transforms raw RespDTO into clean DomainModel (null fallbacks, currency/date formatting).
-
-2. Data Layer (Repos)
-
-data/repositories/
-
-Domain API gateways
-
-Calls apiRequest<T>() and runs Mapper automatically. Always returns clean Domain Models.
-
-3. Presentation Layer
-
-stores/, pages/, components/
-
-Reactive state & visual UI
-
-Pinia Setup Stores wrap repo calls in useDialog().catchError(). UI uses <GlobalCustom\*>.
-
-4. Testing Layer
-
-tests/unit/
-
-Isolated unit testing (Vitest)
-
-Every feature must include unit tests for its Mapper, Repository, and Pinia Store.
-
-📁 2. Standard Folder Structure
+## 📁 2. Standard Folder Structure
 
 ```
 source/
@@ -197,91 +144,34 @@ source/
 └── tsconfig.json # TypeScript compiler configuration
 ```
 
-🧩 3. Global UI Component Reference
+---
 
-All components inside components/global/ are automatically registered by Nuxt 3 with the Global prefix. Always use these over raw Vuetify tags to guarantee consistent design and validation.
+## 🧩 3. Global UI Component Reference
 
-Category
+All components inside `components/global/` are automatically registered by Nuxt 3 with the `Global` prefix. Always use these over raw Vuetify tags to guarantee consistent design and validation.
 
-Component Tag
+| Category | Component Tag | Description |
+| :--- | :--- | :--- |
+| **Layout & Cards** | `<GlobalCustomCardTitle>` | Standard page header bar with title, subtitle, and `#action` slot. |
+| | `<GlobalCustomCardFilter>` | Config-driven search & filter bar with automatic required validation. |
+| | `<GlobalCustomCardTable>` | Table card wrapper displaying total record count and export slot. |
+| | `<GlobalCustomDialogCard>` | Config-driven modal dialog with automatic required validation. |
+| **Tables & Tags** | `<GlobalCustomTable>` | Standardized data table with loading states and custom cell slots. |
+| | `<GlobalTablePagination>` | Reusable pagination control component. |
+| | `<GlobalCustomStatusTag>` | Status badge chip (`A`=Active, `I`=Inactive, `P`=Pending, `R`=Rejected). |
+| **Form Controls** | `<GlobalCustomTextField>` | Input text field with built-in responsive grid column sizing. |
+| | `<GlobalCustomTextArea>` | Multi-line text field wrapper. |
+| | `<GlobalCustomDropdown>` | Select dropdown wrapper with standardized options binding. |
+| | `<GlobalCustomDatePicker>` | Standardized date picker component. |
+| **Media & Upload** | `<GlobalCustomImageUploader>` | Drag-and-drop file/image uploader with ordering and deletion. |
+| | `<GlobalCustomImageCard>` | Thumbnail display card integrated with `v-viewer` modal preview. |
+| **Actions & Alerts** | `<GlobalCustomActionBtn>` | Standard action button with consistent typography and ripple. |
+| | `<GlobalCustomIconButton>` | Icon button with built-in tooltip and hover feedback. |
+| | `<GlobalAppDialog>` | Global SweetAlert modal notification wrapper. |
 
-Description
+---
 
-Layout & Cards
-
-<GlobalCustomCardTitle>
-
-Standard page header bar with title, subtitle, and #action slot.
-
-<GlobalCustomCardFilter>
-
-Config-driven search & filter bar with automatic required validation.
-
-<GlobalCustomCardTable>
-
-Table card wrapper displaying total record count and export slot.
-
-<GlobalCustomDialogCard>
-
-Config-driven modal dialog with automatic required validation.
-
-Tables & Tags
-
-<GlobalCustomTable>
-
-Standardized data table with loading states and custom cell slots.
-
-<GlobalTablePagination>
-
-Reusable pagination control component.
-
-<GlobalCustomStatusTag>
-
-Status badge chip (A=Active, I=Inactive, P=Pending, R=Rejected).
-
-Form Controls
-
-<GlobalCustomTextField>
-
-Input text field with built-in responsive grid column sizing.
-
-<GlobalCustomTextArea>
-
-Multi-line text field wrapper.
-
-<GlobalCustomDropdown>
-
-Select dropdown wrapper with standardized options binding.
-
-<GlobalCustomDatePicker>
-
-Standardized date picker component.
-
-Media & Upload
-
-<GlobalCustomImageUploader>
-
-Drag-and-drop file/image uploader with ordering and deletion.
-
-<GlobalCustomImageCard>
-
-Thumbnail display card integrated with v-viewer modal preview.
-
-Actions & Alerts
-
-<GlobalCustomActionBtn>
-
-Standard action button with consistent typography and ripple.
-
-<GlobalCustomIconButton>
-
-Icon button with built-in tooltip and hover feedback.
-
-<GlobalAppDialog>
-
-Global SweetAlert modal notification wrapper.
-
-🚀 4. End-to-End Implementation Flow (The 6 Steps)
+## 🚀 4. End-to-End Implementation Flow (The 6 Steps)
 
 When building a new feature, follow this exact sequence. Note how the Repository automatically invokes the Mapper, keeping the Pinia Store lightweight and free of data-formatting logic.
 
@@ -305,11 +195,11 @@ sequenceDiagram
     UI->>UI: Render via GlobalCustom* components
 ```
 
-Step 1: Define Domain Models & Data DTOs (domain/ & data/dtos/)
+### Step 1: Define Domain Models & Data DTOs (domain/ & data/dtos/)
 
-Separate what the UI needs (domain/models/) from what the Backend expects/returns (data/dtos/).
+Separate what the UI needs (`domain/models/`) from what the Backend expects/returns (`data/dtos/`).
 
-A. Domain Model (domain/models/item.model.ts)
+#### A. Domain Model (`domain/models/item.model.ts`)
 
 ```ts
 export type ItemStatus = "A" | "I";
@@ -333,7 +223,7 @@ export interface ItemFilter {
 }
 ```
 
-B. Data Transfer Objects (data/dtos/item.dto.ts)
+#### B. Data Transfer Objects (`data/dtos/item.dto.ts`)
 
 Combine Request and Response interfaces for a feature into a single file:
 
@@ -361,9 +251,11 @@ export interface ItemRespDTO {
 }
 ```
 
-Step 2: Implement the Mapper (data/mappers/)
+---
 
-The Mapper encapsulates default fallbacks ("-"), localized fields, and formatting rules so raw backend quirks never leak into Stores or Components.
+### Step 2: Implement the Mapper (data/mappers/)
+
+The Mapper encapsulates default fallbacks (`"-"`), localized fields, and formatting rules so raw backend quirks never leak into Stores or Components.
 
 ```ts
 // data/mappers/item.mapper.ts
@@ -393,18 +285,20 @@ export const itemMapper = {
 };
 ```
 
-Export centrally in data/mappers/index.ts:
+Export centrally in `data/mappers/index.ts`:
 
 ```ts
 export { itemMapper } from "./item.mapper";
 ```
 
-Step 3: Implement the Repository (data/repositories/)
+---
 
-Use apiRequest<T>() and toFormData(body) from @/core/network/apiClient. The repository automatically maps ItemRespDTO into ItemModel before returning.
+### Step 3: Implement the Repository (data/repositories/)
 
-[!IMPORTANT]
-NEVER write manual new FormData() or repetitive formData.append(...) lines. Always pass the typed DTO directly to toFormData(body).
+Use `apiRequest<T>()` and `toFormData(body)` from `@/core/network/apiClient`. The repository automatically maps `ItemRespDTO` into `ItemModel` before returning.
+
+> [!IMPORTANT]
+> NEVER write manual `new FormData()` or repetitive `formData.append(...)` lines. Always pass the typed DTO directly to `toFormData(body)`.
 
 ```ts
 // data/repositories/item.repo.ts
@@ -443,15 +337,17 @@ export const itemRepository = {
 };
 ```
 
-Export centrally in data/repositories/index.ts:
+Export centrally in `data/repositories/index.ts`:
 
 ```ts
 export { itemRepository } from "./item.repo";
 ```
 
-Step 4: Manage State in a Pinia Setup Store (stores/)
+---
 
-Use Pinia Setup Syntax (ref, arrow functions) for clean TypeScript inference and Nuxt 3 auto-import support.
+### Step 4: Manage State in a Pinia Setup Store (stores/)
+
+Use Pinia Setup Syntax (`ref`, arrow functions) for clean TypeScript inference and Nuxt 3 auto-import support.
 
 > [!IMPORTANT]
 > Always wrap repository calls in useDialog().catchError(() => ...). This intercepts backend/network errors, displays standardized error alerts, and safely returns null without unhandled promise rejections.
@@ -510,9 +406,11 @@ export const useItemStore = defineStore("itemStore", () => {
 });
 ```
 
-Step 5: Build the UI with Global Components (pages/ & components/)
+---
 
-Keep page components thin and declarative by leveraging Nuxt auto-imports and <GlobalCustom\*> components.
+### Step 5: Build the UI with Global Components (pages/ & components/)
+
+Keep page components thin and declarative by leveraging Nuxt auto-imports and `<GlobalCustom*>` components.
 
 ```vue
 <!-- pages/items/index.vue -->
@@ -601,35 +499,19 @@ onMounted(() => {
 </template>
 ```
 
-Step 6: Write Unit Tests (tests/unit/{feature}/)
+---
+
+### Step 6: Write Unit Tests (tests/unit/{feature}/)
 
 Every feature must include unit tests covering its three core logic layers using Vitest:
 
-Test File
+| Test File | Target Layer | What to Verify |
+| :--- | :--- | :--- |
+| `{feature}.mapper.spec.ts` | Data Mapper (`data/mappers/`) | Pure function tests: verify DTO-to-Domain formatting, currency formatting, status tags (`"A"`/`"I"`), and null/empty fallback strings (`"-"`). |
+| `{feature}.repo.spec.ts` | Repository (`data/repositories/`) | Mock `apiRequest` and `toFormData`. Verify endpoints, HTTP methods (`GET`/`POST`/`DELETE`), and that responses are mapped via the Mapper. |
+| `{feature}.store.spec.ts` | Pinia Store (`stores/`) | Mock the Repository and `useDialog()`. Verify state transitions (`loading`, `items`), error handling via `dialog.catchError()`, and post-save list refreshes. |
 
-Target Layer
-
-What to Verify
-
-{feature}.mapper.spec.ts
-
-Data Mapper (data/mappers/)
-
-Pure function tests: verify DTO-to-Domain formatting, currency formatting, status tags ("A"/"I"), and null/empty fallback strings ("-").
-
-{feature}.repo.spec.ts
-
-Repository (data/repositories/)
-
-Mock apiRequest and toFormData. Verify endpoints, HTTP methods (GET/POST/DELETE), and that responses are mapped via the Mapper.
-
-{feature}.store.spec.ts
-
-Pinia Store (stores/)
-
-Mock the Repository and useDialog(). Verify state transitions (loading, items), error handling via dialog.catchError(), and post-save list refreshes.
-
-A. Mapper Unit Test (tests/unit/item/item.mapper.spec.ts)
+#### A. Mapper Unit Test (tests/unit/item/item.mapper.spec.ts)
 
 ```ts
 import { describe, it, expect } from "vitest";
@@ -673,7 +555,7 @@ describe("itemMapper", () => {
 });
 ```
 
-B. Repository Unit Test (tests/unit/item/item.repo.spec.ts)
+#### B. Repository Unit Test (tests/unit/item/item.repo.spec.ts)
 
 ```ts
 import { describe, it, expect, vi, beforeEach } from "vitest";
@@ -708,7 +590,7 @@ describe("itemRepository", () => {
 });
 ```
 
-C. Store Unit Test (tests/unit/item/item.store.spec.ts)
+#### C. Store Unit Test (tests/unit/item/item.store.spec.ts)
 
 ```ts
 import { describe, it, expect, vi, beforeEach } from "vitest";
@@ -763,9 +645,11 @@ describe("useItemStore", () => {
 });
 ```
 
-⚙️ 5. Automated Feature Scaffolding (CLI)
+---
 
-To eliminate boilerplate, use the built-in generator script (scripts/make-feature.mjs) to scaffold all 5 Clean Architecture files plus the 3 unit test files automatically:
+## ⚙️ 5. Automated Feature Scaffolding (CLI)
+
+To eliminate boilerplate, use the built-in generator script (`scripts/make-feature.mjs`) to scaffold all 5 Clean Architecture files plus the 3 unit test files automatically:
 
 ```bash
 yarn make:feature <feature-name>
@@ -776,41 +660,35 @@ yarn make:feature banner-promo
 
 This single command generates:
 
-domain/models/banner-promo.model.ts
+- `domain/models/banner-promo.model.ts`
+- `data/dtos/banner-promo.dto.ts`
+- `data/mappers/banner-promo.mapper.ts`
+- `data/repositories/banner-promo.repo.ts`
+- `stores/banner-promo.store.ts`
+- `tests/unit/banner-promo/banner-promo.mapper.spec.ts`
+- `tests/unit/banner-promo/banner-promo.repo.spec.ts`
+- `tests/unit/banner-promo/banner-promo.store.spec.ts`
 
-data/dtos/banner-promo.dto.ts
+---
 
-data/mappers/banner-promo.mapper.ts
+## 🛡️ 6. Core Development Standards & Best Practices
 
-data/repositories/banner-promo.repo.ts
+### 1. Zero Manual FormData Append
 
-stores/banner-promo.store.ts
+Never manually instantiate `new FormData()` or chain `.append(...)` in components, stores, or repositories. Always pass your typed request DTO to `toFormData(body)` from `@/core/network/apiClient`.
 
-tests/unit/banner-promo/banner-promo.mapper.spec.ts
+### 2. Standardized Error Handling
 
-tests/unit/banner-promo/banner-promo.repo.spec.ts
+Never leave raw unhandled `try/catch` blocks on API calls. Always wrap store repository invocations in `useDialog().catchError(() => ...)`.
 
-tests/unit/banner-promo/banner-promo.store.spec.ts
+### 3. Image Upload & Preview Standards
 
-🛡️ 6. Core Development Standards & Best Practices
+- **Uploading**: Always use `<GlobalCustomImageUploader>` for drag-and-drop file upload, ordering, and deletion.
+- **Previewing**: Use the `v-viewer` directive with `<GlobalCustomImageCard>`. Never build ad-hoc `v-dialog` modals for previewing images to prevent state desynchronization.
 
-1. Zero Manual FormData Append
+### 4. Dynamic Multilingual Input Fields
 
-Never manually instantiate new FormData() or chain .append(...) in components, stores, or repositories. Always pass your typed request DTO to toFormData(body) from @/core/network/apiClient.
-
-2. Standardized Error Handling
-
-Never leave raw unhandled try/catch blocks on API calls. Always wrap store repository invocations in useDialog().catchError(() => ...).
-
-3. Image Upload & Preview Standards
-
-Uploading: Always use <GlobalCustomImageUploader> for drag-and-drop file upload, ordering, and deletion.
-
-Previewing: Use the v-viewer directive with <GlobalCustomImageCard>. Never build ad-hoc v-dialog modals for previewing images to prevent state desynchronization.
-
-4. Dynamic Multilingual Input Fields
-
-Avoid copy-pasting duplicate input fields across supported languages (Lao, English, Chinese, Vietnamese). Maintain a configuration array in <script setup> and loop dynamically:
+Avoid copy-pasting duplicate input fields across supported languages (Lao, English, Chinese, Vietnamese). Maintain a configuration array in `<script setup>` and loop dynamically:
 
 ```vue
 <script setup lang="ts">
@@ -837,9 +715,9 @@ const languageList = [
 </template>
 ```
 
-5. Form Dirty-Checking via useDirtyForm Composable
+### 5. Form Dirty-Checking via useDirtyForm Composable
 
-When editing an existing record, use the useDirtyForm composable (or snapshot comparison) to avoid unnecessary API calls when no fields were modified:
+When editing an existing record, use the `useDirtyForm` composable (or snapshot comparison) to avoid unnecessary API calls when no fields were modified:
 
 ```ts
 // composables/useDirtyForm.ts
@@ -872,7 +750,7 @@ const handleSubmit = async () => {
 };
 ```
 
-6. Pre-PR Verification (Type Safety & Unit Tests)
+### 6. Pre-PR Verification (Type Safety & Unit Tests)
 
 Every Pull Request must pass both static type checking and the Vitest unit test suite with 0 errors before submission:
 
